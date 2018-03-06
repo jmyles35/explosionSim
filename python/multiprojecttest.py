@@ -18,7 +18,7 @@ x = [ 10,  73, 145, 218, 290, 363, 435, 507, 590]
 y = [590, 590, 590, 590, 590, 590, 590, 590, 590]
 v_x = [100,  80,  60,  50, 120, 100,  20,  80, 160]
 v_y = [150, 170, 120, 140, 100,  90, 190, 170, 120]
-a_x = -1
+a_x = 0
 a_y = -9.81
 
 def get_colour( i ):
@@ -45,35 +45,40 @@ while not done:
 
     if mouseClick:
         font = pygame.font.SysFont('timesnewroman', 45, True, True)
-        text = font.render("What am I doing with my life.", False, WHITE)
+        text = font.render("Pause.", False, WHITE)
         screen.blit(text, [20, 200])
 
-    dt = clock.get_time() / 100;
+    if not mouseClick:
+        font = pygame.font.SysFont('timesnewroman', 45, True, True)
+        text = font.render("Go.", False, WHITE)
+        screen.blit(text, [20, 200])
+
+        dt = clock.get_time() / 100;
+
+        for i in range(8):
+            v_x[i] += a_x * dt
+            v_y[i] += a_y * dt
+            x[i] += v_x[i] * dt + 1/2 * a_x * dt
+            y[i] += -1 * v_y[i] * dt - 1/2 * a_y * dt #Backwards
+
+            if x[i] < 10 or x[i] > 590:
+                v_x[i] *= -0.9
+                if x[i] < 10:
+                    x[i] += 10
+                elif x[i] > 590:
+                    x[i] -= 5
+
+            if y[i] < 10 or y[i] > 590:
+                v_y[i] *= -0.9
+                if y[i] < 10:
+                    y[i] += 10
+                elif y[i] > 590:
+                    y[i] -= 5
 
     for i in range(8):
-        v_x[i] += a_x * dt
-        v_y[i] += a_y * dt
-        x[i] += v_x[i] * dt + 1/2 * a_x * dt
-        y[i] += -1 * v_y[i] * dt - 1/2 * a_y * dt #Backwards
-
-        if x[i] < 10 or x[i] > 590:
-            v_x[i] *= -1
-            if x[i] < 10:
-                x[i] += 10
-            elif x[i] > 590:
-                x[i] -= 10
-
-        if y[i] < 10 or y[i] > 590:
-            v_y[i] *= -1
-            if y[i] < 10:
-                y[i] += 10
-            elif y[i] > 590:
-                y[i] -= 10
-
         c = get_colour(i)
         pygame.draw.circle(screen, c, [int(x[i]), int(y[i])], 10)
-        pygame.display.flip()
-
+    pygame.display.flip()
     clock.tick(60)
 
 pygame.quit
