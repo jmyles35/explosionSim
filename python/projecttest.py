@@ -13,6 +13,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Projectile Test")
 clock = pygame.time.Clock()
 
+#Initial values
 x = 10
 y = 590
 v_x = 100
@@ -30,6 +31,7 @@ while not done:
     screen.fill(BLACK)
 
     dt = clock.get_time() / 100;
+
     v_x += a_x * dt
     v_y += a_y * dt
     x += v_x * dt + 1/2 * a_x * dt
@@ -46,10 +48,8 @@ while not done:
         v_y *= -1
         if y < 10:
             y += 10
-        elif x > 590:
+        elif y > 590:
             y -= 10
-        if v_y < 10:
-            y -= 5
 
     pygame.draw.circle(screen, WHITE, [int(x), int(y)], 10)
 
