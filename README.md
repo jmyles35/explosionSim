@@ -26,7 +26,7 @@ We intend to model explosions and how they propagate using Lagrangian mechanics,
 
 ### How to Use the Three.js model
 
-Implementations are added into index.html. The /js  folder contains models and etc. To start the sim, just open index.html in a web browser (preferably chrome).
+Implementations are added into index.html. The /js  folder contains models and etc. To start the sim, just open sim.html in a web browser (preferably chrome). All functions should be developed in main.js or other javascript files. 
 
 ### References:
 
