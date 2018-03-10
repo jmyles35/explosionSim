@@ -33,7 +33,7 @@
 		<div id="info">
 			Lagrangian Model for the Simulation of Explosions <br>
 			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - <span id="waterSize"></span> webgl gpgpu water<br/>
-			Select <span id="options"></span> water size<br/>
+			Select <span id="options"></span> simulation size<br/>
 			Move mouse to disturb water.<br>
 			Press mouse button to orbit around. 'W' key toggles wireframe.
 		</div>
@@ -315,14 +315,40 @@
 				};
 
 				gui.add( effectController, "mouseSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
-				gui.add( effectController, "viscosity", 0.0, 0.1, 0.001 ).onChange( valuesChanger );
+				gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
+
+				// Buttons for toggling the various propagations (temp, pressure, vel, density)
 				var buttonSmooth = {
-				    smoothWater: function() {
-					smoothWater();
+				    SmoothField: function() {
+					SmoothField();
 				    }
 				};
-				gui.add( buttonSmooth, 'smoothWater' );
+				var buttonDensity = {
+					DensityField: function() {
+					DensityField();
+					}
+				};
+				var buttonTemp = {
+					TemperatureField: function() {
+					TemperatureField();
+					}
+				};
+				var buttonPres = {
+					PressureField: function() {
+					PressureField();
+					}
+				};
+				var buttonVel = {
+					VelocityField: function() {
+					VelocityField();
+					}
+				};
 
+				gui.add( buttonSmooth, 'SmoothField' );
+				gui.add( buttonDensity, 'DensityField' );
+				gui.add( buttonVel, 'VelocityField' );
+				gui.add( buttonPres, 'PressureField' );
+				gui.add( buttonTemp, 'TemperatureField' );
 
 				initWater();
 
@@ -333,7 +359,7 @@
 
 			function initWater() {
 
-				var materialColor = 0x0040C0;
+				var materialColor = 0x5C85D7;
 
 				var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
 
@@ -355,7 +381,7 @@
 				// Material attributes from MeshPhongMaterial
 				material.color = new THREE.Color( materialColor );
 				material.specular = new THREE.Color( 0x111111 );
-				material.shininess = 50;
+				material.shininess = 0;
 
 				// Sets the uniforms with the material values
 				material.uniforms.diffuse.value = material.color;
@@ -414,10 +440,10 @@
 
 			function fillTexture( texture ) {
 
-				var waterMaxHeight = 10;
+				var waterMaxHeight = 50;
 
 				function noise( x, y, z ) {
-					var multR = waterMaxHeight;
+					var multR = waterMaxHeight/25;
 					var mult = 0.025;
 					var r = 0;
 					for ( var i = 0; i < 15; i++ ) {
@@ -448,8 +474,24 @@
 
 			}
 
-			function smoothWater() {
+			function SmoothField() {
 
+				var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
+				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+				for ( var i = 0; i < 100; i++ ) {
+
+					smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+
+					smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+
+				}
+
+			}
+
+			function DensityField() {
 				var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
 				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
 
@@ -462,7 +504,51 @@
 					gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
 
 				}
+			}
 
+			function TemperatureField() {
+				var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
+				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+				for ( var i = 0; i < 10; i++ ) {
+
+					smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+
+					smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+
+				}
+			}
+
+			function VelocityField() {
+				var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
+				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+				for ( var i = 0; i < 10; i++ ) {
+
+					smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+
+					smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+
+				}
+			}
+
+			function PressureField() {
+				var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
+				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+				for ( var i = 0; i < 10; i++ ) {
+
+					smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+
+					smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+					gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+
+				}
 			}
 
 
