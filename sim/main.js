@@ -1,6 +1,10 @@
-(function () {
-    // Put everythng in here!!!
-    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+$(document).ready(function () {
+    if (!Detector.webgl) {
+
+        Detector.addGetWebGLMessage();
+        document.getElementById('container').innerHTML = "";
+
+    }
 
     var hash = document.location.hash.substr( 1 );
     if ( hash ) hash = parseInt( hash, 0 );
@@ -414,6 +418,7 @@
 
         // Set uniforms: mouse interaction
         var uniforms = heightmapVariable.material.uniforms;
+        /*
         if ( mouseMoved ) {
 
             this.raycaster.setFromCamera( mouseCoords, camera );
@@ -434,6 +439,7 @@
         else {
             uniforms.mousePos.value.set( 10000, 10000 );
         }
+        */
 
         // Do the gpu computation
         gpuCompute.compute();
@@ -446,4 +452,4 @@
 
     }
 
-})();
+});
