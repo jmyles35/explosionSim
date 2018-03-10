@@ -24,6 +24,10 @@ We intend to model explosions and how they propagate using Lagrangian mechanics,
 
 
 
+### How to Use the Three.js model
+
+Implementations are added into index.html. The /js  folder contains models and etc. To start the sim, just open index.html in a web browser (preferably chrome).
+
 ### References:
 
 *   “An Eulerian–Lagrangian approach for simulating explosions of energetic devices.” Computers & Structures, Pergamon, 26 Mar. 2007, www.sciencedirect.com/science/article/pii/S0045794907000429.
