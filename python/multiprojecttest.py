@@ -56,10 +56,8 @@ while not done:
         dt = clock.get_time() / 100;
 
         for i in range(8):
-            v_x[i] += a_x * dt
-            v_y[i] += a_y * dt
-            x[i] += v_x[i] * dt + 1/2 * a_x * dt
-            y[i] += -1 * v_y[i] * dt - 1/2 * a_y * dt #Backwards
+            x[i] += v_x[i] * dt + 1/2 * a_x * dt * dt
+            y[i] += -1 * v_y[i] * dt - 1/2 * a_y * dt * dt #Backwards
 
             if x[i] < 10 or x[i] > 590:
                 v_x[i] *= -0.9
@@ -78,6 +76,7 @@ while not done:
     for i in range(8):
         c = get_colour(i)
         pygame.draw.circle(screen, c, [int(x[i]), int(y[i])], 10)
+
     pygame.display.flip()
     clock.tick(60)
 

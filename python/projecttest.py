@@ -19,7 +19,7 @@ y = 590
 v_x = 100
 v_y = 150
 a_x = 0
-a_y = -1*9.81
+a_y = -9.81
 
 done = False
 
@@ -30,10 +30,8 @@ while not done:
 
     screen.fill(BLACK)
 
-    dt = clock.get_time() / 100;
+    dt = clock.get_time() / 100
 
-    v_x += a_x * dt
-    v_y += a_y * dt
     x += v_x * dt + 1/2 * a_x * dt
     y += -1 * v_y * dt - 1/2 * a_y * dt #Backwards
 
