@@ -97,6 +97,10 @@ $(document).ready(function () {
 
             }
 
+            if ( event.keyCode === 82 ) {
+              initWater();
+            }
+
         } , false );
 
         window.addEventListener( 'resize', onWindowResize, false );
@@ -158,14 +162,10 @@ $(document).ready(function () {
 
     }
 
-
-    function initWater() {
-
+    function initMaterial() {
+        // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
         var materialColor = 0x5C85D7;
 
-        var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
-
-        // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
         var material = new THREE.ShaderMaterial( {
             uniforms: THREE.UniformsUtils.merge( [
                 THREE.ShaderLib[ 'phong' ].uniforms,
@@ -194,7 +194,16 @@ $(document).ready(function () {
         // Defines
         material.defines.WIDTH = WIDTH.toFixed( 1 );
         material.defines.BOUNDS = BOUNDS.toFixed( 1 );
+        return material;
+    }
 
+    function initWater() {
+
+        var materialColor = 0x5C85D7;
+
+        var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
+
+        var material = initMaterial();
         waterUniforms = material.uniforms;
 
         waterMesh = new THREE.Mesh( geometry, material );
@@ -294,8 +303,25 @@ $(document).ready(function () {
     }
 
     function DensityField() {
+
         var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
         var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+        var newGeometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
+        var newMaterial = initMaterial();
+        newMaterial.vertexColors = THREE.VertexColors;
+
+        for ( var iDens = 0; iDens < newGeometry.faces.length; iDens++ ) {
+            if (iDens % 2 === 0) {
+                newGeometry.faces[iDens].vertexColors = [green, green, green];
+            } else {
+                newGeometry.faces[iDens].vertexColors = [blue, blue, blue];
+            }
+        }
+
+        waterUniforms = newMaterial.uniforms;
+        waterMesh.material = newMaterial;
+        waterMesh.geometry = newGeometry;
 
         for ( var i = 0; i < 10; i++ ) {
 
