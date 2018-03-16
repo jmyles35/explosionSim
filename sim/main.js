@@ -309,13 +309,15 @@ $(document).ready(function () {
 
         var newGeometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
         var newMaterial = initMaterial();
-        newMaterial.vertexColors = THREE.VertexColors;
 
-        for ( var iDens = 0; iDens < newGeometry.faces.length; iDens++ ) {
-            if (iDens % 2 === 0) {
-                newGeometry.faces[iDens].vertexColors = [green, green, green];
+        newMaterial.vertexColors = THREE.VertexColors;
+        newMaterial.colorWrite = true;
+
+        for ( var iDens = 0; iDens < newGeometry.color.length; iDens++ ) {
+            if ( iDens % 2 === 0 ) {
+                newGeometry.color[iDens] = [green, green, green];
             } else {
-                newGeometry.faces[iDens].vertexColors = [blue, blue, blue];
+                newGeometry.color[iDens] = [blue, blue, blue];
             }
         }
 
