@@ -17,9 +17,9 @@ import seaborn as sns
 
 
 class GridBox:
-   def __init__(self, vx, vy, T, dens, pres):
+   def __init__(self, vx, vy, temp, dens, pres):
       self.vx = vx
       self.vy = vy
-      self.T = T
+      self.temp= temp
       self.dens = dens
       self.pres = pres
