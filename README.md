@@ -24,12 +24,13 @@ We intend to model explosions and how they propagate using Lagrangian mechanics,
 
 
 
-### Client - How to Use the Three.js model
+### Client - Frontend
+template is in index.html. Supporting files are in static. keep js/ in static, smh idk whyyyyyy
+run 'npm run dev' to develop
 
-Implementations are added into index.html. The /js  folder contains models and etc. To start the sim, just open sim.html in a web browser (preferably chrome). All functions should be developed in main.js or other javascript files. Developer Tools in Chrome is great tool for debugging. 
-
-### Server Side Dev:
+### Server - Backend
 Read up on Flask: http://flask.pocoo.org/docs/0.12/quickstart/#a-minimal-application
+run 'python run.py' to run
 
 
 ### References:
