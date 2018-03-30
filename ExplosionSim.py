@@ -169,14 +169,14 @@ class ExplosionSim:
                 plt.pause(0.05)
                 print t
                 
-        for i in range(self.TOTALSTEPS):
+            
             for j in range(self.width):
                 for k in range(self.width):
-                    self.finalMatrix[i,j,k, 0] = self.lattice[j,k].vx
-                    self.finalMatrix[i,j,k, 1] = self.lattice[j,k].vy
-                    self.finalMatrix[i,j,k, 2] = self.lattice[j,k].temp
-                    self.finalMatrix[i,j,k, 3] = self.lattice[j,k].dens
-                    self.finalMatrix[i,j,k, 4] = self.lattice[j,k].pres
+                    self.finalMatrix[t,j,k, 0] = self.lattice[j,k].vx
+                    self.finalMatrix[t,j,k, 1] = self.lattice[j,k].vy
+                    self.finalMatrix[t,j,k, 2] = self.lattice[j,k].temp
+                    self.finalMatrix[t,j,k, 3] = self.lattice[j,k].dens
+                    self.finalMatrix[t,j,k, 4] = self.lattice[j,k].pres
             
     ####################
     
