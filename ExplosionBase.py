@@ -14,31 +14,34 @@ from GridBox import GridBox
 from scipy import stats, integrate
 import matplotlib.pyplot as plt
 
+import seaborn as sns; sns.set()
+
 #intitial Conditions
 initV = 0 #m/s C4
 initT = 290 #K no idea
 initPres = 31000*100000 #310 kBar?? for C4 (appears to work with 31 bar?)
 initDens = 1750 #kg/m^3
 PATM = 101325.0 #pa
-DENSITY = 1.01 #kg/m^3
+R = 287.05 #air
+DENSITY = PATM/R/initT #kg/m^3
 TAMBIENT = 293.15 #K
-ENERGYFACTOR = 0.95 #although this is multiplied by velocity so idk
+ENERGYFACTOR = 0.5 #although this is multiplied by velocity so idk
 
 
 k = 1.0 /120 #multiply by T 
-R = 287.05 #air
+
 cv = 718 #J/kgK ?
 visc = 50 * 10**(-6) #Pa.s
 
 
 #steps and characteristics of simulation
 #seems to be dt< 2 microseconds and dx > 10 cm
-dt = 0.000001 #seconds
-dx = 0.1 #m
-TOTALSTEPS = 250
+dt = 0.0000002 #seconds
+dx = 0.2 #m
+TOTALSTEPS = 6000
 
 #testwidth
-width = 32
+width = 16
 
 
 #realwidth
@@ -57,7 +60,7 @@ vyAvg = np.zeros( (width, width))
 
 densNext = np.zeros( (width, width))
 densChange = np.zeros( (width, width))
-densAvg = np.full( (width, width),1.01)
+densAvg = np.full( (width, width), DENSITY)
 #densHat = np.zeros( (width, width))
 #densBar = np.zeros( (width, width))
 
@@ -122,16 +125,24 @@ def approxAccel():
             #find dvx/dt via navier-stokes equation and finite differences
             
             ##If I use 3rd order finite difference's it might make a difference
-            accelx[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (lattice[i+1,j].pres - lattice[i-1,j].pres)/ dx / 2.0
-                  + visc / (dx)**2 * (lattice[i+1,j].vx - 4 * lattice[i,j].vx + lattice[i-1,j].vx + lattice[i,j + 1].vx + lattice[i,j-1].vx)
+            accelx[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (-1.0/12 * lattice[i+2,j].pres + 2.0/3 * lattice[i+1,j].pres 
+                  - 2.0/3 * lattice[i-1,j].pres + 1.0/12 * lattice[i-2,j].pres)/ dx #first derivivitive 3rd order
+                  + visc / (dx)**2 * (lattice[i+1,j].vx - 4 * lattice[i,j].vx + lattice[i-1,j].vx + lattice[i,j+1].vx + lattice[i,j-1].vx) #2nd order laplacian
                   + visc / (3 * dx**2) * (lattice[i+1,j].vx - 2 * lattice[i,j].vx + lattice[i-1,j].vx 
-                           + 0.25 * (lattice[i+1,j+1].vy + lattice[i-1,j-1].vy - lattice[i-1,j+1].vy - lattice[i+1,j-1].vy))
+                           + 1.0/144 * (8.0*(lattice[i+1,j-2].vy + lattice[i+2,j-1].vy + lattice[i-2,j+1].vy + lattice[i-1,j+2].vy)
+                           -8.0*(lattice[i-1,j-2].vy + lattice[i-2,j-1].vy + lattice[i+1,j+2].vy + lattice[i+2,j+1].vy)
+                           -(lattice[i+2,j-2].vy + lattice[i-2,j+2].vy - lattice[i-2,j-2].vy - lattice[i+2,j+2].vy)
+                           + 64.0 * (lattice[i+1,j+1].vy + lattice[i-1,j-1].vy - lattice[i+1,j-1].vy - lattice[i-1,j+1].vy))) #mixed partial
             )
                   
-            accely[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (lattice[i,j+1].pres - lattice[i,j-1].pres)/ dx / 2.0
+            accely[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (-1.0/12 * lattice[i,j+2].pres + 2.0/3 * lattice[i,j+1].pres 
+                  - 2.0/3 * lattice[i,j-1].pres + 1.0/12 * lattice[i,j-2].pres)/ dx
                   + visc / (dx)**2 * (lattice[i,j+1].vy - 4 * lattice[i,j].vy + lattice[i,j-1].vy + lattice[i+1,j].vy + lattice[i-1,j].vy)
-                  + visc / (3 * dx**2) * (lattice[i,j+1].vy - 2 * lattice[i,j].vy + lattice[i,j-1].vy 
-                           + 0.25 * (lattice[i+1,j+1].vx + lattice[i-1,j-1].vx - lattice[i-1,j+1].vx - lattice[i+1,j-1].vx))
+                  + visc / (3 * dx**2) * (lattice[i,j+1].vy - 2 * lattice[i,j].vy + lattice[i,j-1].vy #2nd order 2nd derivitive
+                           + 1.0/144 * (8.0*(lattice[i+1,j-2].vx + lattice[i+2,j-1].vx + lattice[i-2,j+1].vx + lattice[i-1,j+2].vx)
+                           -8.0*(lattice[i-1,j-2].vx + lattice[i-2,j-1].vx + lattice[i+1,j+2].vx + lattice[i+2,j+1].vx)
+                           -(lattice[i+2,j-2].vx + lattice[i-2,j+2].vx - lattice[i-2,j-2].vx - lattice[i+2,j+2].vx)
+                           + 64.0*(lattice[i+1,j+1].vx + lattice[i-1,j-1].vx - lattice[i+1,j-1].vx - lattice[i-1,j+1].vx)))
             )
                   
             
@@ -163,7 +174,7 @@ def approxTemps():
                                + lattice[i+1,j].temp - 2 * lattice[i,j].temp + lattice[i-1,j].temp) / (dx**2) 
                     - lattice[i,j].pres * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
                     -2.0 * visc / 3 * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
-                    + visc / 2.0 * (vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])**2 / (dx**2) 
+                    + visc * ((vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])/4.0)**2 / (dx**2) 
                     )
  
 #######           
@@ -180,8 +191,10 @@ def advectDensity():
     
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            densAvg[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].dens + 2.0/3 *lattice[i+1,j].dens - 2.0/3 * lattice[i-1,j].dens + 1.0/12 * lattice[i-2,j].dens)/ dx 
-                   + vyAvg[i,j] * (-1.0/12 *lattice[i,j+2].dens + 2.0/3 *lattice[i,j+1].dens - 2.0/3 * lattice[i,j-1].dens + 1.0/12 * lattice[i,j-2].dens)/ dx)
+            densAvg[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].dens + 2.0/3 * lattice[i+1,j].dens 
+                   - 2.0/3 * lattice[i-1,j].dens + 1.0/12 * lattice[i-2,j].dens)/ dx 
+                   + vyAvg[i,j] * (-1.0/12 *lattice[i,j+2].dens + 2.0/3 *lattice[i,j+1].dens 
+                          - 2.0/3 * lattice[i,j-1].dens + 1.0/12 * lattice[i,j-2].dens)/ dx)
             
             ###ADVECTION SUCKS :(
 #            densHat[i,j] = densAvg[i,j] + dt * (vxAvg[i,j] * (densAvg[i+1,j] - densAvg[i-1,j])/ dx / 2.0 
@@ -263,8 +276,39 @@ def gasLaw():
     for i in range(1,width-1):
         for j in range(width):
             lattice[i,j].pres = max(max(presTemp[i,j], -100000000), min(presTemp[i,j], 310000*100000))
-
             
+## Will it work if I just do this at the end?? 
+def wallVelo():
+    
+    ##top wall
+    for i in range(width):
+        lattice[i,width - 3].vx = ENERGYFACTOR * lattice[i,width - 3].vx
+        if (lattice[i,width - 3].vy > 0) :
+            lattice[i,width - 3].vy = -1 * ENERGYFACTOR * lattice[i,width - 3].vy
+        else:
+            lattice[i,width - 3].vy = ENERGYFACTOR * lattice[i,width - 3].vy
+    
+    ##left wall
+    for i in range(width):
+        lattice[2,i].vy =  ENERGYFACTOR * lattice[2,i].vy
+        if (lattice[2,i].vx < 0) :
+            lattice[2,i].vx = -1 * ENERGYFACTOR * lattice[2,i].vx
+        else:
+            lattice[2,i].vx = ENERGYFACTOR * lattice[2,i].vx
+    ##bottom wall
+    for i in range(width):
+        lattice[i,2].vx = ENERGYFACTOR * lattice[i,2].vx
+        if (lattice[i,2].vy < 0) :
+            lattice[i,2].vy = -1 * ENERGYFACTOR * lattice[i,2].vy
+        else:
+            lattice[i,2].vy = ENERGYFACTOR * lattice[i,2].vy
+    ##right wall
+    for i in range(width):
+        lattice[width-3,i].vy = ENERGYFACTOR * lattice[width-3,i].vy
+        if (lattice[width-3,i].vx > 0) :
+            lattice[width-3,i].vx = -1 * ENERGYFACTOR * lattice[width-3,i].vx
+        else:
+            lattice[width-3,i].vx = ENERGYFACTOR * lattice[width-3,i].vx
 init()
 
 
@@ -298,5 +342,11 @@ for t in range(0,TOTALSTEPS):
            lattice [i,j].temp = max(tempNext[i,j] + tempChange[i,j], 50)
      
     gasLaw()
+    
+    if(t % 200 == 0):
+        plt.clf()
+        sns.heatmap(presTemp)
+        plt.pause(0.05)
+        print t
     
 
