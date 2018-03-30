@@ -2,11 +2,11 @@
 
 ### Project Members
 
-*   McConkey
-*   Khorram
-*   Myles
-*   Kaps
-*   Lin
+*   Keenan McConkey
+*   Austin Khorram
+*   Justin Myles
+*   Colema Kaps
+*   Esther Lin
 
 ### Project Description
 
@@ -25,12 +25,53 @@ We intend to model explosions and how they propagate using Lagrangian mechanics,
 
 
 ### Client - Frontend
-template is in index.html. Supporting files are in static. keep js/ in static, smh idk whyyyyyy
-run 'npm run dev' to develop
+The front is a single page application built with Vue.js. All supporting files have been added. Simulation visuals should be developed in the following locations:
+
+-   /frontend/index.html
+-   frontend/static/*
+    -   Please don't touch the /js/* folder. smh idk I don't know why things don't work without it there. All needed library files are in the static folder though. 
+
+How to develop the frontend:
+
+-   First, download node and npm (node needs an account I think)
+
+-   In order to view any changes applied to the frontend (changes in html files, js, etc.), npm needs to be run. You can choose either or of the commands:
+
+    -   ```shell
+        npm run build
+        ```
+
+        This command takes a snapshot of the current state of the project and packages it into the dist/ folder. Run this command when you want your frontend changes to be seen/implemented by the backend. 
+
+
+    -   ```shell
+        npm run dev
+        ```
+
+        Building your project everytime you make a small change can be slow and tedious. Use the dev feature to see your js/html code implement immediately. Just run this command, and start making changes to your frontend files. You will see them implemented immediately.
+
+
+-   Viewing your changes: If you run the dev option, head over to the link given 
+
+    ```shell
+    Your application is running here: http://localhost:8080
+    ```
+
+    This is hosted on your laptop, with a web browser such as chrome or safari. Or, if you want to view your changes after building, run the python server. 
 
 ### Server - Backend
-Read up on Flask: http://flask.pocoo.org/docs/0.12/quickstart/#a-minimal-application
-run 'python run.py' to run
+How to develop the Backend:
+
+-   Put all files in the backend/
+-   Run "python run.py" or "./run.py" in the project root directory to see changes. 
+-   Connections between front and back will be implemented in run.py
+
+Resources: Read up on Flask: http://flask.pocoo.org/docs/0.12/quickstart/#a-minimal-application
+
+
+### dist/ - the connection between client and server
+
+This is the folder of built features from the front end. It is created when the front end is built with npm. The Python server in run.py will call files in this directory. This folder will get updated and remade everytime the build command is run. Remember to write your code in frontend/, not dist/! Or else they will get deleted!
 
 
 ### References:
