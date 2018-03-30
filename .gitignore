@@ -28,3 +28,8 @@ Temporary Items
 
 # Other pesky files
 ./server/ajax_request.js
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
