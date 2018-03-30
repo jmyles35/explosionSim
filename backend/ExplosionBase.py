@@ -6,7 +6,6 @@ Created on Sat Mar  3 16:45:58 2018
 @author: Marian
 """
 
-
 import numpy as np
 import pandas as pd
 from GridBox import GridBox
@@ -25,7 +24,7 @@ TAMBIENT = 293.15 #K
 ENERGYFACTOR = 0.95 #although this is multiplied by velocity so idk
 
 
-k = 1.0 /120 #multiply by T 
+k = 1.0 /120 #multiply by T
 R = 287.05 #air
 cv = 718 #J/kgK ?
 visc = 50 * 10**(-6) #Pa.s
@@ -78,12 +77,12 @@ presTemp = np.full((width,width),PATM)
 #######
 def init():
     #(x,y) coordinates of values
-    
+
     for i in range(width):
         for j in range(width):
             lattice[i,j] = GridBox(0,0,TAMBIENT, DENSITY, PATM)
-    
-        
+
+
 #    lattice[width/2, width/2].vx = -1 * initV
 #    lattice[width/2, width/2].vy = -1 * initV
 #    lattice[width/2 + 1, width/2].vx = initV
@@ -92,7 +91,7 @@ def init():
 #    lattice[width/2 + 1, width/2 + 1].vy = initV
 #    lattice[width/2, width/2 + 1].vx = -1 * initV
 #    lattice[width/2, width/2 + 1].vy = initV
-    
+
     #16 blocks should make the initial derivites better
     for i in range(0,1):
         for j in range(0,1):
@@ -112,7 +111,7 @@ def init():
             lattice[width/2 -1 + i, width/2 -1 + j].pres = initPres
             lattice[width/2 -1 + i, width/2 -1 + j].dens = initDens
  #######   end init
-    
+
 
 
 #######
@@ -120,21 +119,21 @@ def approxAccel():
     for i in range(2, width - 2):
         for j in range(2, width - 2):
             #find dvx/dt via navier-stokes equation and finite differences
-            
+
             ##If I use 3rd order finite difference's it might make a difference
             accelx[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (lattice[i+1,j].pres - lattice[i-1,j].pres)/ dx / 2.0
                   + visc / (dx)**2 * (lattice[i+1,j].vx - 4 * lattice[i,j].vx + lattice[i-1,j].vx + lattice[i,j + 1].vx + lattice[i,j-1].vx)
-                  + visc / (3 * dx**2) * (lattice[i+1,j].vx - 2 * lattice[i,j].vx + lattice[i-1,j].vx 
+                  + visc / (3 * dx**2) * (lattice[i+1,j].vx - 2 * lattice[i,j].vx + lattice[i-1,j].vx
                            + 0.25 * (lattice[i+1,j+1].vy + lattice[i-1,j-1].vy - lattice[i-1,j+1].vy - lattice[i+1,j-1].vy))
             )
-                  
+
             accely[i,j] = 1.0 / lattice[i,j].dens * ( -1 * (lattice[i,j+1].pres - lattice[i,j-1].pres)/ dx / 2.0
                   + visc / (dx)**2 * (lattice[i,j+1].vy - 4 * lattice[i,j].vy + lattice[i,j-1].vy + lattice[i+1,j].vy + lattice[i-1,j].vy)
-                  + visc / (3 * dx**2) * (lattice[i,j+1].vy - 2 * lattice[i,j].vy + lattice[i,j-1].vy 
+                  + visc / (3 * dx**2) * (lattice[i,j+1].vy - 2 * lattice[i,j].vy + lattice[i,j-1].vy
                            + 0.25 * (lattice[i+1,j+1].vx + lattice[i-1,j-1].vx - lattice[i-1,j+1].vx - lattice[i+1,j-1].vx))
             )
-                  
-            
+
+
 #######
 def approxVelo():
     #find squigle velocity and mean velocity, place into 4 matrices
@@ -150,112 +149,112 @@ def approxTemps():
     # just make them smaller cause i dunno
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-    
+
 #            tempNext[i,j] = lattice[i,j].temp + dt / (cv * lattice[i,j].dens) * (
-#                    k * lattice[i,j].temp * (lattice[i,j+1].temp - 2 * lattice[i,j].temp + lattice[i,j-1].temp 
-#                               + lattice[i+1,j].temp - 2 * lattice[i,j].temp + lattice[i-1,j].temp) / (dx**2) 
+#                    k * lattice[i,j].temp * (lattice[i,j+1].temp - 2 * lattice[i,j].temp + lattice[i,j-1].temp
+#                               + lattice[i+1,j].temp - 2 * lattice[i,j].temp + lattice[i-1,j].temp) / (dx**2)
 #                    - lattice[i,j].pres * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
 #                    + -2.0 * visc / 3 * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
-#                    + visc / 2.0 * (vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])**2 / (dx**2) 
+#                    + visc / 2.0 * (vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])**2 / (dx**2)
 #                    )
             tempChange[i,j] = + dt / (cv * lattice[i,j].dens) * (
-                    k * (lattice[i,j+1].temp - 2 * lattice[i,j].temp + lattice[i,j-1].temp 
-                               + lattice[i+1,j].temp - 2 * lattice[i,j].temp + lattice[i-1,j].temp) / (dx**2) 
+                    k * (lattice[i,j+1].temp - 2 * lattice[i,j].temp + lattice[i,j-1].temp
+                               + lattice[i+1,j].temp - 2 * lattice[i,j].temp + lattice[i-1,j].temp) / (dx**2)
                     - lattice[i,j].pres * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
                     -2.0 * visc / 3 * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1]- vyAvg[i,j-1]) / dx
-                    + visc / 2.0 * (vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])**2 / (dx**2) 
+                    + visc / 2.0 * (vyAvg[i+1,j]- vyAvg[i-1,j] + vxAvg[i,j+1]- vxAvg[i,j-1])**2 / (dx**2)
                     )
- 
-#######           
+
+#######
 def approxDensity():
     for i in range(2, width - 2):
         for j in range(2, width - 2):
 #            densNext[i,j] = lattice[i,j].dens + -1 * dt * lattice[i,j].dens * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1] - vyAvg[i,j-1]) / dx / 2.0
             densChange[i,j] = -1 * dt * lattice[i,j].dens * (vxAvg[i+1,j]- vxAvg[i-1,j] + vyAvg[i,j+1] - vyAvg[i,j-1]) / dx / 2.0
-       
+
 #######
 def advectDensity():
     # 5 loops of back and forth error elimination?? doesnt appear to work
 #    for k in range(5):
-    
+
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            densAvg[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].dens + 2.0/3 *lattice[i+1,j].dens - 2.0/3 * lattice[i-1,j].dens + 1.0/12 * lattice[i-2,j].dens)/ dx 
+            densAvg[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].dens + 2.0/3 *lattice[i+1,j].dens - 2.0/3 * lattice[i-1,j].dens + 1.0/12 * lattice[i-2,j].dens)/ dx
                    + vyAvg[i,j] * (-1.0/12 *lattice[i,j+2].dens + 2.0/3 *lattice[i,j+1].dens - 2.0/3 * lattice[i,j-1].dens + 1.0/12 * lattice[i,j-2].dens)/ dx)
-            
+
             ###ADVECTION SUCKS :(
-#            densHat[i,j] = densAvg[i,j] + dt * (vxAvg[i,j] * (densAvg[i+1,j] - densAvg[i-1,j])/ dx / 2.0 
+#            densHat[i,j] = densAvg[i,j] + dt * (vxAvg[i,j] * (densAvg[i+1,j] - densAvg[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (densAvg[i,j+1] - densAvg[i,j-1])/ dx / 2.0)
 #            densBar[i,j] = 3.0 / 2 * densAvg[i,j] - 0.5 * densHat[i,j]
-#            densNext[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (densBar[i+1,j] - densBar[i-1,j])/ dx / 2.0 
+#            densNext[i,j] = lattice[i,j].dens - dt * (vxAvg[i,j] * (densBar[i+1,j] - densBar[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (densBar[i,j+1] - densBar[i,j-1])/ dx / 2.0)
     for i in range( width):
         for j in range(width):
             densNext[i,j] = densAvg[i,j]
-#               lattice [i,j].dens = densNext[i,j]    
-            
+#               lattice [i,j].dens = densNext[i,j]
+
 def advectVelo():
-    
+
     #TRY to do vx, vy seperately
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            
+
             #3RD ORDER
-            vxAvgADV[i,j] = vx[i,j] - dt * (vxAvg[i,j] * (-1.0/12 *vx[i+2,j] + 2.0/3 *vx[i+1,j] - 2.0/3 * vx[i-1,j] + 1.0/12 * vx[i-2,j])/ dx 
+            vxAvgADV[i,j] = vx[i,j] - dt * (vxAvg[i,j] * (-1.0/12 *vx[i+2,j] + 2.0/3 *vx[i+1,j] - 2.0/3 * vx[i-1,j] + 1.0/12 * vx[i-2,j])/ dx
                    + vyAvg[i,j] * (-1.0/12 *vx[i,j+2] + 2.0/3 *vx[i,j+1] - 2.0/3 * vx[i,j-1] + 1.0/12 * vx[i,j-2])/ dx)
             ####This is the problem line
             ####IMPROVE ALGORITHM TO CONVECT
-#            vxHat[i,j] = vxAvgADV[i,j] + dt * (vxAvg[i,j] * (vxAvgADV[i+1,j] - vxAvgADV[i-1,j])/ dx / 2.0 
+#            vxHat[i,j] = vxAvgADV[i,j] + dt * (vxAvg[i,j] * (vxAvgADV[i+1,j] - vxAvgADV[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (vxAvgADV[i,j+1] - vxAvgADV[i,j-1])/ dx / 2.0)
 #            vxBar[i,j] = 3.0 / 2 * vxAvgADV[i,j] - 0.5 * vxHat[i,j]
-#            vxTemp[i,j] = vxBar[i,j] - dt * (vxAvg[i,j] * (vxBar[i+1,j] - vxBar[i-1,j])/ dx / 2.0 
+#            vxTemp[i,j] = vxBar[i,j] - dt * (vxAvg[i,j] * (vxBar[i+1,j] - vxBar[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (vxBar[i,j+1] - vxBar[i,j-1])/ dx / 2.0)
-            
-            
+
+
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            ####IMPROVE   
-#            lattice [i,j].vx = vxTemp[i,j] 
+            ####IMPROVE
+#            lattice [i,j].vx = vxTemp[i,j]
             lattice[i,j].vx = vxAvgADV[i,j]
-            
+
     ##vy
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            
+
             #3RD ORDER
-            vyAvgADV[i,j] = vy[i,j] - dt * (vxAvg[i,j] * (-1.0/12 *vy[i+2,j] + 2.0/3 *vy[i+1,j] - 2.0/3 * vy[i-1,j] + 1.0/12 * vy[i-2,j])/ dx 
+            vyAvgADV[i,j] = vy[i,j] - dt * (vxAvg[i,j] * (-1.0/12 *vy[i+2,j] + 2.0/3 *vy[i+1,j] - 2.0/3 * vy[i-1,j] + 1.0/12 * vy[i-2,j])/ dx
                    + vyAvg[i,j] * (-1.0/12 *vy[i,j+2] + 2.0/3 *vy[i,j+1] - 2.0/3 * vy[i,j-1] + 1.0/12 * vy[i,j-2])/ dx)
-            
+
             ######IMPROVE
-#            vyHat[i,j] = vy[i,j] + dt * (vxAvg[i,j] * (vy[i+1,j] - vy[i-1,j])/ dx / 2.0 
+#            vyHat[i,j] = vy[i,j] + dt * (vxAvg[i,j] * (vy[i+1,j] - vy[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (vy[i,j+1] - vy[i,j-1]) / dx / 2.0)
-            
+
             #using vyavg
-#            vyHat[i,j] = vyAvgADV[i,j] + dt * (vxAvg[i,j] * (vyAvgADV[i+1,j] - vyAvgADV[i-1,j])/ dx / 2.0 
+#            vyHat[i,j] = vyAvgADV[i,j] + dt * (vxAvg[i,j] * (vyAvgADV[i+1,j] - vyAvgADV[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (vyAvgADV[i,j+1] - vyAvgADV[i,j-1])/ dx / 2.0)
 #            vyBar[i,j] = 3.0 / 2 * vyAvgADV[i,j] - 0.5 * vyHat[i,j]
-            
+
             #commented out until a better advection algorithm can be developed
 #            vyBar[i,j] = vy[i,j] + 0.5 * (vyAvgADV[i,j] - vyHat[i,j])
-#            vyTemp[i,j] = vyBar[i,j] - dt * (vxAvg[i,j] * (vyBar[i+1,j] - vyBar[i-1,j])/ dx / 2.0 
+#            vyTemp[i,j] = vyBar[i,j] - dt * (vxAvg[i,j] * (vyBar[i+1,j] - vyBar[i-1,j])/ dx / 2.0
 #                   + vyAvg[i,j] * (vyBar[i,j+1] - vyBar[i,j-1])/ dx / 2.0)
-            
-            
+
+
     for i in range(2, width - 2):
         for j in range(2, width - 2):
             ####commented until better algorithm
-#               lattice [i,j].vy = vyTemp[i,j] 
+#               lattice [i,j].vy = vyTemp[i,j]
             lattice[i,j].vy = vyAvgADV[i,j]
-    
+
 def advectTemp():
     for i in range(2, width - 2):
         for j in range(2, width - 2):
-            tempNext[i,j] = lattice[i,j].temp - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].temp + 2.0/3 *lattice[i+1,j].temp 
-                    - 2.0/3 * lattice[i-1,j].temp + 1.0/12 * lattice[i-2,j].temp)/ dx 
-                   + vyAvg[i,j] * (-1.0/12 *lattice[i,j+2].temp + 2.0/3 *lattice[i,j+1].temp 
+            tempNext[i,j] = lattice[i,j].temp - dt * (vxAvg[i,j] * (-1.0/12 *lattice[i+2,j].temp + 2.0/3 *lattice[i+1,j].temp
+                    - 2.0/3 * lattice[i-1,j].temp + 1.0/12 * lattice[i-2,j].temp)/ dx
+                   + vyAvg[i,j] * (-1.0/12 *lattice[i,j+2].temp + 2.0/3 *lattice[i,j+1].temp
                           - 2.0/3 * lattice[i,j-1].temp + 1.0/12 * lattice[i,j-2].temp)/ dx)
-            
-            
+
+
 def gasLaw():
     for i in range(width):
         for j in range(width):
@@ -264,21 +263,21 @@ def gasLaw():
         for j in range(width):
             lattice[i,j].pres = max(max(presTemp[i,j], -100000000), min(presTemp[i,j], 310000*100000))
 
-            
+
 init()
 
 
 ##### MAIN LOOP
 for t in range(0,TOTALSTEPS):
     approxAccel()
-        
+
     approxVelo()
-        
+
     approxTemps()
     #sub in the new temperature
-            
-    approxDensity() 
-    #Sub in the New density       
+
+    approxDensity()
+    #Sub in the New density
 #    for i in range(1, width - 1):
 #        for j in range(1, width - 1):
 #            lattice [i,j].dens = densNext[i,j]
@@ -288,7 +287,7 @@ for t in range(0,TOTALSTEPS):
             #set min density as 0.05 kg / m^3
             lattice [i,j].dens = max(max(densNext[i,j] + densChange[i,j], 0.15), min(densNext[i,j] + densChange[i,j], 3000))
     advectVelo()
-          
+
     advectTemp()
     for i in range(1, width - 1):
         for j in range(1, width - 1):
@@ -296,7 +295,5 @@ for t in range(0,TOTALSTEPS):
 #            lattice [i,j].temp = max(max(tempNext[i,j], 20), min(tempNext[i,j], 5000))
             ###I really need to find out whats going on with the temp approximation
            lattice [i,j].temp = max(tempNext[i,j] + tempChange[i,j], 50)
-     
-    gasLaw()
-    
 
+    gasLaw()
