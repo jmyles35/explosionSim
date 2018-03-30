@@ -35,15 +35,19 @@ class ExplosionSim:
     visc = 50 * 10**(-6) #Pa.s
     
     
-    
-    
     def __init__(self, dt, dx, width, time):
         #intitial Conditions
         #steps and characteristics of simulation
         #seems to be dt< 2 microseconds and dx > 10 cm
+
+        
         self.dt = dt #seconds
         self.dx = dx #m
         self.TOTALSTEPS = int(time / dt)
+        
+        ##5 variables
+        self.finalMatrix = np.zeros((self.TOTALSTEPS, width, width, 5))
+        
         
         #testwidth
         self.width = width
@@ -164,6 +168,16 @@ class ExplosionSim:
                 sns.heatmap(self.presTemp)
                 plt.pause(0.05)
                 print t
+                
+            for i in range(self.TOTALSTEPS):
+                for j in range(self.width):
+                    for k in range(self.width):
+                        self.finalMatrix[i,j,k, 0] = self.lattice[j,k].vx
+                        self.finalMatrix[i,j,k, 1] = self.lattice[j,k].vy
+                        self.finalMatrix[i,j,k, 2] = self.lattice[j,k].temp
+                        self.finalMatrix[i,j,k, 3] = self.lattice[j,k].dens
+                        self.finalMatrix[i,j,k, 4] = self.lattice[j,k].pres
+            
     ####################
     
     

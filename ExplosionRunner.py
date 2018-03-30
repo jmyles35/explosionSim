@@ -15,4 +15,8 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns; sns.set()
 
-ExplosionSim(0.0000002, 0.15, 12, 0.002)
+explosion = ExplosionSim(0.0000002, 0.15, 12, 0.00002)
+
+
+
+
