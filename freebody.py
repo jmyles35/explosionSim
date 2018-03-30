@@ -30,6 +30,8 @@ class freebody(S, xdim, ydim,StartPoint ):"
     for i in range(0,xlen):
         weight=weight+i*RowSum[i,0]
     yCOM=weight/Sum
+    
+    def update (timstep, explosionMatrix, )
 
 
 
