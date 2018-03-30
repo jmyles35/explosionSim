@@ -343,6 +343,8 @@ for t in range(0,TOTALSTEPS):
      
     gasLaw()
     
+    wallVelo()
+    
     if(t % 200 == 0):
         plt.clf()
         sns.heatmap(presTemp)
