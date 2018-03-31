@@ -27,6 +27,7 @@ class ExplosionSim:
     DENSITY = PATM/R/initT #kg/m^3
     TAMBIENT = 293.15 #K
     ENERGYFACTOR = 0.5 #although this is multiplied by velocity so idk
+    STEELDENS = 8000 #kg/m^3
     
     
     k = 1.0 /120 #multiply by T 
@@ -126,6 +127,12 @@ class ExplosionSim:
                 self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].temp = ExplosionSim.initT
                 self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].pres = ExplosionSim.initPres
                 self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].dens = ExplosionSim.initDens
+        for i in range(2):
+             for j in range(self.width):
+                 self.lattice[0+i,j].dens = ExplosionSim.STEELDENS
+                 self.lattice[j,0+i].dens = ExplosionSim.STEELDENS
+                 self.lattice[self.width - 1 - i,j].dens = ExplosionSim.STEELDENS
+                 self.lattice[j,self.width - 1 - i].dens = ExplosionSim.STEELDENS
      #######   end init
      
      
@@ -163,9 +170,9 @@ class ExplosionSim:
             
 #            self.wallVelo()
             
-            if(t % 200 == 0):
+            if(t % 500 == 0):
                 plt.clf()
-                sns.heatmap(self.presTemp)
+                sns.heatmap(self.densNext)
                 plt.pause(0.05)
                 print t
                 
@@ -191,6 +198,7 @@ class ExplosionSim:
             for j in range(2, self.width - 2):
                 #find dvx/dt via navier-stokes equation and finite differences
                 
+               
                 ##If I use 3rd order finite difference's it might make a difference
                 self.accelx[i,j] = 1.0 / self.lattice[i,j].dens * ( -1 * (-1.0/12 * self.lattice[i+2,j].pres + 2.0/3 * self.lattice[i+1,j].pres 
                       - 2.0/3 * self.lattice[i-1,j].pres + 1.0/12 * self.lattice[i-2,j].pres)/ self.dx #first derivivitive 3rd order
@@ -246,6 +254,13 @@ class ExplosionSim:
      
     #######           
     def approxDensity(self):
+        for i in range(2):
+             for j in range(self.width):
+                 self.lattice[0+i,j].dens = ExplosionSim.DENSITY
+                 self.lattice[j,0+i].dens = ExplosionSim.DENSITY
+                 self.lattice[self.width - 1 - i,j].dens = ExplosionSim.DENSITY
+                 self.lattice[j,self.width - 1 - i].dens = ExplosionSim.DENSITY                
+                 
         for i in range(2, self.width - 2):
             for j in range(2, self.width - 2):
     #            self.densNext[i,j] = self.lattice[i,j].dens + -1 * self.dt * self.lattice[i,j].dens * (self.vxAvg[i+1,j]- self.vxAvg[i-1,j] + self.vyAvg[i,j+1] - self.vyAvg[i,j-1]) / self.dx / 2.0
@@ -256,6 +271,7 @@ class ExplosionSim:
         # 5 loops of back and forth error elimination?? doesnt appear to work
     #    for k in range(5):
         
+    
         for i in range(2, self.width - 2):
             for j in range(2, self.width - 2):
                 self.densAvg[i,j] = self.lattice[i,j].dens - self.dt * (self.vxAvg[i,j] * (-1.0/12 *self.lattice[i+2,j].dens + 2.0/3 * self.lattice[i+1,j].dens 
@@ -272,7 +288,13 @@ class ExplosionSim:
         for i in range( self.width):
             for j in range(self.width):
                 self.densNext[i,j] = self.densAvg[i,j]
-    #               self.lattice [i,j].dens = self.densNext[i,j]    
+    #               self.lattice [i,j].dens = self.densNext[i,j]   
+        for i in range(2):
+             for j in range(self.width):
+                 self.lattice[0+i,j].dens = ExplosionSim.STEELDENS
+                 self.lattice[j,0+i].dens = ExplosionSim.STEELDENS
+                 self.lattice[self.width - 1 - i,j].dens = ExplosionSim.STEELDENS
+                 self.lattice[j,self.width - 1 - i].dens = ExplosionSim.STEELDENS
                 
     def advectVelo(self):
         
@@ -337,8 +359,8 @@ class ExplosionSim:
                 
                 
     def gasLaw(self):
-        for i in range(self.width):
-            for j in range(self.width):
+        for i in range(2, self.width - 2):
+            for j in range(2, self.width - 2):
                 self.presTemp[i,j] = self.lattice[i,j].dens * ExplosionSim.R * self.lattice[i,j].temp
         for i in range(1,self.width-1):
             for j in range(self.width):
