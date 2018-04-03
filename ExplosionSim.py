@@ -22,7 +22,7 @@ import seaborn as sns; sns.set()
 class ExplosionSim:
     initV = 0 #m/s C4
     initT = 290 #K no idea
-    initPres = 1 * 10**7 #310 kBar?? for C4 (appears to work with 31 bar?)
+    initPres = 310 * 10**9 #310 kBar?? for C4 (appears to work with 31 bar?)
     initDens = 700 #kg/m^3
     PATM = 101325.0 #pa
     R = 287.05 #air
@@ -30,6 +30,10 @@ class ExplosionSim:
     TAMBIENT = 293.15 #K
     ENERGYFACTOR = 0.0 #although this is multiplied by velocity so idk
     STEELDENS = 8000 #kg/m^3
+    
+    VMAX = initPres / (2.5 * 10**4 * initDens) * 1.5 #max is 1.2 times calculated max
+    PRESMAX = initPres * 4 #let it not be greater than 3x init pressure
+    
     
     
     k = 1.0 /120 #multiply by T 
@@ -43,6 +47,7 @@ class ExplosionSim:
         #steps and characteristics of simulation
         #seems to be dt< 2 microseconds and dx > 10 cm
 
+        print ExplosionSim.VMAX
         
         self.dt = dt #seconds
         self.dx = dx #m
@@ -128,7 +133,6 @@ class ExplosionSim:
         
             for i in range(0,2):
                 for j in range(0,2):
-        #            print 'hi'
                     self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].temp = ExplosionSim.initT
                     self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].pres = ExplosionSim.initPres
                     self.lattice[self.width/2 -1 + i, self.width/2 -1 + j].dens = ExplosionSim.initDens
@@ -201,6 +205,7 @@ class ExplosionSim:
         if self.numExplosions == 4 :
             for k in range(1,4):
                 ##this currently creates a 2x2 bomb (this can be increased)
+                ## only does at 1,1 and 3,3
                 if k != 2 :
                     for i in range(0,1):
                         for j in range(0,1):
@@ -322,9 +327,6 @@ class ExplosionSim:
                 #If I use 3rd order finite difference's it might make a difference
                 self.accelx[i,j] = 1.0 / self.lattice[i,j].dens * ( -1 * (-1.0/12 * self.lattice[i+2,j].pres + 2.0/3 * self.lattice[i+1,j].pres 
                       - 2.0/3 * self.lattice[i-1,j].pres + 1.0/12 * self.lattice[i-2,j].pres)/ self.dx #first derivivitive 3rd order
-#                self.accelx[i,j] = 1.0 / (self.lattice[i,j].dens) *  (1.0 * ( -1 * (self.lattice[i+1,j].pres - self.lattice[i,j].pres)/ self.dx) 
-#                                - 0.0 * (-1.0/12 * self.lattice[i+2,j].pres + 2.0/3 * self.lattice[i+1,j].pres 
-#                                         - 2.0/3 * self.lattice[i-1,j].pres + 1.0/12 * self.lattice[i-2,j].pres)/ self.dx
                                + ExplosionSim.visc / (self.dx)**2 * (self.lattice[i+1,j].vx - 4 * self.lattice[i,j].vx + self.lattice[i-1,j].vx + self.lattice[i,j+1].vx + self.lattice[i,j-1].vx) #2nd order laplacian
                                + ExplosionSim.visc / (3 * self.dx**2) * (self.lattice[i+1,j].vx - 2 * self.lattice[i,j].vx + self.lattice[i-1,j].vx 
                                + 1.0/144 * (8.0*(self.lattice[i+1,j-2].vy + self.lattice[i+2,j-1].vy + self.lattice[i-2,j+1].vy + self.lattice[i-1,j+2].vy)
@@ -335,7 +337,6 @@ class ExplosionSim:
                       
                 self.accely[i,j] = 1.0 / self.lattice[i,j].dens * ( -1 * (-1.0/12 * self.lattice[i,j+2].pres + 2.0/3 * self.lattice[i,j+1].pres 
                       - 2.0/3 * self.lattice[i,j-1].pres + 1.0/12 * self.lattice[i,j-2].pres)/ self.dx
-#                self.accely[i,j] = 1.0 / (self.lattice[i,j].dens + self.lattice[i,j+1].dens)/2.0 * (-1 * (self.lattice[i,j+1].pres - self.lattice[i,j].pres)/ self.dx
                                + ExplosionSim.visc / (self.dx)**2 * (self.lattice[i,j+1].vy - 4 * self.lattice[i,j].vy + self.lattice[i,j-1].vy + self.lattice[i+1,j].vy + self.lattice[i-1,j].vy)
                                + ExplosionSim.visc / (3 * self.dx**2) * (self.lattice[i,j+1].vy - 2 * self.lattice[i,j].vy + self.lattice[i,j-1].vy #2nd order 2nd derivitive
                                + 1.0/144 * (8.0*(self.lattice[i+1,j-2].vx + self.lattice[i+2,j-1].vx + self.lattice[i-2,j+1].vx + self.lattice[i-1,j+2].vx)
@@ -350,10 +351,10 @@ class ExplosionSim:
         #find squigle velocity and mean velocity, place into 4 matrices
         for i in range(2, self.width - 2):
             for j in range(2, self.width - 2):
-                self.vx[i,j] = self.lattice[i,j].vx + self.accelx[i,j] * self.dt
-                self.vy[i,j] = self.lattice[i,j].vy + self.accely[i,j] * self.dt
-                self.vxAvg[i,j] = self.lattice[i,j].vx + self.accelx[i,j] * self.dt / 2.0
-                self.vyAvg[i,j] = self.lattice[i,j].vy + self.accely[i,j] * self.dt / 2.0
+                self.vx[i,j] = self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vy[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vxAvg[i,j] =  self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt / 2.0, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vyAvg[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt / 2.0, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
     
     #######
     def approxTemps(self):
@@ -511,7 +512,7 @@ class ExplosionSim:
                 self.presTemp[i,j] = self.lattice[i,j].dens * ExplosionSim.R * self.lattice[i,j].temp
         for i in range(1,self.width-1):
             for j in range(self.width):
-                self.lattice[i,j].pres = max(max(self.presTemp[i,j], -100000000), min(self.presTemp[i,j], 310000*100000))
+                self.lattice[i,j].pres = self.bound(self.presTemp[i,j], -0.2 * ExplosionSim.PRESMAX, ExplosionSim.PRESMAX)
                 
     ## Will it work if I just do this at the end?? 
     def wallVelo(self):
@@ -545,6 +546,13 @@ class ExplosionSim:
                 self.lattice[self.width-3,i].vx = -1 * ExplosionSim.ENERGYFACTOR * self.lattice[self.width-3,i].vx
             else:
                 self.lattice[self.width-3,i].vx = ExplosionSim.ENERGYFACTOR * self.lattice[self.width-3,i].vx
-    
+                
+    def bound(self, val, lower, upper):
+        if val < lower:
+            val = lower
+        if val > upper:
+            val = upper
+        return val
         
+    
 
