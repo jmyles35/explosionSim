@@ -80,7 +80,7 @@
 
                 // Dynamics
                 heightmapValue.y += accel;
-                heightmapValue.x += heightmapValue.y * deltaTime;
+                heightmapValue.x += heightmapValue.y * deltaTime - 0.05;
 
                 // Viscosity
                 heightmapValue.x += sump * viscosityConstant;
