@@ -67,15 +67,15 @@ class Freebody:
         of mass which is tracked via the self.xCOM and self.yCOM
         """
 
-        ColumnSum=np.sum(S,axis=0)
-        Sum=np.sum(S)
+        ColumnSum=np.sum(self.S,axis=0)
+        Sum=np.sum(self.S)
         weight=0.0
         for i in range(0,xlen):
             weight=weight+i*ColumnSum[0,i]
         xCOM=weight/Sum
 
         weight=0.0
-        RowSum=np.sum(S,axis=1)
+        RowSum=np.sum(self.S,axis=1)
         for i in range(0,xlen):
             weight=weight+i*RowSum[i,0]
         weight/Sum
@@ -95,8 +95,10 @@ class Freebody:
         Fx=0
         Fy=0
         T=0
-        for i in range(0,xlen):
-            for j in range(0,ylen):
+        
+        self.chekwalls()
+        for i in range(0+1,xlen-1):
+            for j in range(0+1,ylen-1):
                 if self.S[j,i]==1:
                     neighbours=getNeighbours(i,j)
 
@@ -202,9 +204,34 @@ class Freebody:
                 rotate(self.omega*dt)
                 self.omega=self.omega+self.omegaDot*dt
                 
-                if (xCOM-xCOMOld)>
+                if (self.xCOM-xCOMOld)<1:
+                    for i in range(0,self.xlen-1):
+                        self.S[:,i]=self.S[:i+1]
+                    self,S[:,self.xlen-1]=np.zeros(self.xlen,1, dtype=int)
+                if (self.xCOM-xCOMOld)>1:
+                    for i in range(1,self.xlen):
+                        self.S[:,i-1]=self.S[:i]
+                    self,S[:,0]=np.zeros(self.xlen,1, dtype=int)
+                    
+                if (yCOM-yCOMOld)<1:
+                    for i in range(0,self.xlen-1):
+                        self.S[i,:]=self.S[i+1,:]
+                    self,S[self.xlen-1,:]=np.zeros(1,self.xlen, dtype=int)
+                if (yCOM-yCOMOld)>1:
+                    for i in range(1,self.xlen1):
+                        self.S[i-1,:]=self.S[i,:]
+                    self,S[0,:]=np.zeros(1,self.xlen, dtype=int)                
+                    
 
+    def checkwalls(self:
+        ColumnSum=np.sum(self.S,axis=0)
+        if [ColumnSum[0,0] > 0 or ColumnSum[0,xlen-1]>0:
+            self.xveloc=-0.6*self.xveloc
+        RowSum=np.sum(self.S,axis=1)
+        if [RowSum[0,0] > 0 or RowSum[xlen-1,0]>0:
+            self.yveloc=-0.6*self.yveloc
 
+        
 
     def getNeighbours(self, x, y):
         """
@@ -222,7 +249,7 @@ class Freebody:
          sx, sy = rotate_coords(dx + cx.min(), dy + cy.min(), -theta, ox, oy)
          sx, sy = sx.round().astype(int), sy.round().astype(int)
          mask = (0 <= sx) & (sx < sw) & (0 <= sy) & (sy < sh)
-         dest = np.empty(shape=(dh, dw), dtype=src.dtype)dest
+         dest = np.empty(shape=(dh, dw), dtype=int)dest
          dest[dy[mask], dx[mask]] = src[sy[mask], sx[mask]]
          dest[dy[~mask], dx[~mask]] = fill
          self.S=dest
