@@ -358,19 +358,16 @@ $(document).ready(function () {
      */
     function SmoothField() {
 
-        var texture = gpuCompute.createTexture(); // Should be flat by default
-        var flatShader = gpuCompute.createShaderMaterial( document.getElementById( 'heightmapFragmentShader' ).textContent, { texture: texture } );
-
         var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
         var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
 
-        for ( var i = 0; i < 11; i++ ) {
+        for ( var i = 0; i < 100; i++ ) {
 
-            flatShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( flatShader, alternateRenderTarget );
+            smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+            gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
 
-            flatShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( flatShader, currentRenderTarget );
+            smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+            gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
         }
     }
 
@@ -379,24 +376,21 @@ $(document).ready(function () {
      */
     function Explosion() {
 
-        // Trying to create a texture with noise
-        var texture_noise = gpuCompute.createTexture();
-        fillTexture( texture_noise );
+        var explosionShader = gpuCompute.createShaderMaterial( document.getElementById( 'waterVertexShader' ).textContent, {
+            mouseSize: 10,
+            viscosityConstant: 0.001
+        });
 
-        // Using gpuCompute to create a shader (wtf is a shader) with that texture
-        var noiseShader = gpuCompute.createShaderMaterial( document.getElementById( 'heightmapFragmentShader' ).textContent, { texture: texture_noise } );
-
-        // Don't understand why we need two targets
         var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
         var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
 
-        for ( var i = 0; i < 1; i++ ) {
+        for ( var i = 0; i < 10; i++ ) {
             // Trying to apply shader to material
-            noiseShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( noiseShader, alternateRenderTarget );
+            explosionShader.uniforms.texture.value = currentRenderTarget.texture;
+            gpuCompute.doRenderTarget( explosionShader, alternateRenderTarget );
 
-            noiseShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( noiseShader, currentRenderTarget );
+            explosionShader.uniforms.texture.value = alternateRenderTarget.texture;
+            gpuCompute.doRenderTarget( explosionShader, currentRenderTarget );
         }
     }
     /*

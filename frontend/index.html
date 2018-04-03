@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - gpgpu - water</title>
+		<title>Lagrangian Explosion Sim</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -50,7 +50,7 @@
 
             #include <common>
 
-            uniform vec2 mousePos;
+            vec2 mousePos;
             uniform float mouseSize;
             uniform float viscosityConstant;
 
@@ -196,7 +196,6 @@
             }
 
         </script>
-
 		<script src="http://code.jquery.com/jquery.min.js"></script>
 		<script>
 			var data = {{ message|tojson }};
