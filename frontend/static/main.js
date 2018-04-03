@@ -41,6 +41,8 @@ $(document).ready(function () {
     var colors = []; // Need for gradient
     var colorsDefault;
 
+    var dataArr = JSON.parse(data);
+
     init();
     animate();
 

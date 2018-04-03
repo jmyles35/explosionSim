@@ -6,8 +6,8 @@ app = Flask(__name__,
             template_folder = "./dist")
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    message = setup()
-    return render_template('index.html', message=message)
+    #message = setup()
+    return render_template('index.html')
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
