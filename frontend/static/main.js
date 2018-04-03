@@ -5,8 +5,11 @@ $(document).ready(function () {
         document.getElementById('container').innerHTML = "";
     }
 
+    var dataArr = JSON.parse( document.getElementById('dataScript').textContent );
+
+    console.log("Hello");
     // Texture width for simulation -- 32 SEEMS OPTIMAL
-    var WIDTH = 64;
+    var WIDTH = 16;
     var NUM_TEXELS = WIDTH * WIDTH;
 
     // Size in system units
@@ -393,16 +396,23 @@ $(document).ready(function () {
      * Maps PRESSURE values to specific COLORS on the mesh
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-     function PressureField(pressureArray) {
+     function PressureField() {
 
        var meshColor = waterMesh.geometry.getAttribute('color');
        meshColor.needsUpdate = true;
-       /*
+       var count = 0;
+
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
-       for( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-          var instPressure = pressureArray[i];
+       for ( var i = 0; i <= WIDTH; i++ ) {
+           for ( var j = 0; j <= WIDTH; j++ ) {
+               var instP = dataArr['0'][i][j]['P'];
+
+               meshColor.setX(count, instP);
+               meshColor.setY(count, instP);
+               meshColor.setZ(count, instP);
+           }
        }
-       */
+
      }
     /*
      * Maps TEMPERATURE values to specific COLORS on the mesh.

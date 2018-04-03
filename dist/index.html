@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang=en><head><title>three.js webgl - gpgpu - water</title><meta charset=utf-8><meta name=viewport content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1"><style>body {
+<!DOCTYPE html><html lang=en><head><title>Lagrangian Explosion Sim</title><meta charset=utf-8><meta name=viewport content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1"><style>body {
 				background-color: #424242;
 				margin: 0px;
 				overflow: hidden;
@@ -17,10 +17,10 @@
 				position: absolute;
 				top: 10px;
 				width: 100%;
-			}</style><link href=/static/css/app.86a4513a3e04c0dcb73e6d6aea4580e4.css rel=stylesheet></head><body><div id=info><h4>Lagrangian Model for the Simulation of Explosions<br>Press mouse button to orbit around. 'W' key toggles wireframe.</h4></div><script src=static/three.js></script><script src=static/Detector.js></script><script src=static/libs/stats.min.js></script><script src=static/libs/dat.gui.min.js></script><script src=static/controls/OrbitControls.js></script><script src=static/SimplexNoise.js></script><script src=static/GPUComputationRenderer.js></script><script id=heightmapFragmentShader type=x-shader/x-fragment>#include <common>
+			}</style><link href=/static/css/app.86a4513a3e04c0dcb73e6d6aea4580e4.css rel=stylesheet></head><body><div id=info><h2>Lagrangian Model for the Simulation of Explosions</h2><br>Press mouse button to orbit around.<br>'W' key toggles wireframe. 'E' key resets explosion.</div><script src=static/three.js></script><script src=static/Detector.js></script><script src=static/libs/stats.min.js></script><script src=static/libs/dat.gui.min.js></script><script src=static/controls/OrbitControls.js></script><script src=static/SimplexNoise.js></script><script src=static/GPUComputationRenderer.js></script><script id=heightmapFragmentShader type=x-shader/x-fragment>#include <common>
 
-            uniform vec2 mousePos;
-            uniform float mouseSize;
+            vec2 mousePos;
+            uniform float explosionSize;
             uniform float viscosityConstant;
 
             #define deltaTime ( 1.0 / (60.0) ) // 60 frames per second
@@ -49,13 +49,14 @@
 
                 // Dynamics
                 heightmapValue.y += accel;
-                heightmapValue.x += heightmapValue.y * deltaTime;
+                heightmapValue.x += heightmapValue.y * deltaTime - (explosionSize/1000.0) ;
+
 
                 // Viscosity
                 heightmapValue.x += sump * viscosityConstant;
 
                 // Mouse influence
-                float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+                float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / explosionSize, 0.0, PI );
                 heightmapValue.x += cos( mousePhase ) + 1.0;
 
                 gl_FragColor = heightmapValue;
