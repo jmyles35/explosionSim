@@ -180,15 +180,15 @@ class Freebody:
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                    if neighbours(4)==1:
+                    if neighbours(6)==1:
 
-                        if neighbours(3)==0:
+                        if neighbours(5)==0:
                             Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
                             Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
 
                             T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
 
-                        if neighbours(5)==0:
+                        if neighbours(7)==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
                             Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
