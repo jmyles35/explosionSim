@@ -25,7 +25,6 @@ class Freebody:
         self.S          = S
         self.xdim       = xdim
         self.ydim       = ydim
-        self.startPoint = startPoint
         self.yveloc     = 0.0
         self.xveloc     = 0.0
         self.omega      = 0.0
@@ -198,7 +197,7 @@ class Freebody:
                 self.omegaDot=T/self.Inertia
                 yCOMOld,XCOMOld=self.getCOM()
                 self.xCOM=(self.xCOM*xdim/xlen+self.xveloc*dt)/(xdim/xlen)
-                self.yCOM=(self.yCOM*xdim/xlen+self.yveloc*dt)xdim/xlen
+                self.yCOM=(self.yCOM*xdim/xlen+self.yveloc*dt)/(xdim/xlen)
                 self.xveloc=self.xveloc+self.xaccel*dt
                 self.yveloc=self.yveloc+self.yaccel*dt
                 rotate(self.omega*dt)
@@ -223,12 +222,12 @@ class Freebody:
                     self,S[0,:]=np.zeros(1,self.xlen, dtype=int)                
                     
 
-    def checkwalls(self:
+    def checkwalls(self):
         ColumnSum=np.sum(self.S,axis=0)
         if ((ColumnSum[0,0] > 0) or ColumnSum[0,xlen-1]>0):
             self.xveloc=-0.6*self.xveloc
         RowSum=np.sum(self.S,axis=1)
-        if [RowSum[0,0] > 0 or RowSum[xlen-1,0]>0:
+        if (RowSum[0,0] > 0 or RowSum[xlen-1,0]>0):
             self.yveloc=-0.6*self.yveloc
 
         
@@ -237,25 +236,25 @@ class Freebody:
         """
         Returns the neighbors (8 verticies) nearest to a point
         """
-       return [0,self.S[y+1,x],self.S[y+1,x+1],self.S[y,x+1],self.S[y-1,x+1],self.S[y-1,x],self.S[y-1,x-1],self.S[y,x-1],self.S[y+1,x-1],]
+        return [0,self.S[y+1,x],self.S[y+1,x+1],self.S[y,x+1],self.S[y-1,x+1],self.S[y-1,x],self.S[y-1,x-1],self.S[y,x-1],self.S[y+1,x-1],]
 
 
-     def rotate(self,theta,xCOM,yCOM, fill=0):
-         theta=theta
-         sh, sw = self.S.shape
-         cx, cy = rotate_coords([0, sw, sw, 0], [0, 0, sh, sh], theta, xCOM, yCOM)
-         dw, dh= sw, sh
-         dx, dy = np.meshgrid(np.arange(dw), np.arange(dh))
-         sx, sy = rotate_coords(dx + cx.min(), dy + cy.min(), -theta, ox, oy)
-         sx, sy = sx.round().astype(int), sy.round().astype(int)
-         mask = (0 <= sx) & (sx < sw) & (0 <= sy) & (sy < sh)
-         dest = np.empty(shape=(dh, dw), dtype=int)dest
-         dest[dy[mask], dx[mask]] = src[sy[mask], sx[mask]]
-         dest[dy[~mask], dx[~mask]] = fill
-         self.S=dest
+    def rotate(self,theta,xCOM,yCOM, fill=0):
+        theta=theta
+        sh, sw = self.S.shape
+        cx, cy = rotate_coords([0, sw, sw, 0], [0, 0, sh, sh], theta, xCOM, yCOM)
+        dw, dh= sw, sh
+        dx, dy = np.meshgrid(np.arange(dw), np.arange(dh))
+        sx, sy = rotate_coords(dx + cx.min(), dy + cy.min(), -theta, ox, oy)
+        sx, sy = sx.round().astype(int), sy.round().astype(int)
+        mask = (0 <= sx) & (sx < sw) & (0 <= sy) & (sy < sh)
+        dest = np.empty(shape=(dh, dw), dtype=int)
+        dest[dy[mask], dx[mask]] = src[sy[mask], sx[mask]]
+        dest[dy[~mask], dx[~mask]] = fill
+        self.S=dest
 
 
-     def rotate_coords(x, y, theta, ox, oy):
+    def rotate_coords(x, y, theta, ox, oy):
         """
         Rotate arrays of coordinates x and y by theta radians about the
         point (ox, oy).
