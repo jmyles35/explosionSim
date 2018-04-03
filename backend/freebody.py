@@ -41,7 +41,7 @@ class Freebody:
         
         self.yCOM,self.xCOM = getCOM()
 
-        weight=0..0
+        weight=0.0
         RowSum=np.sum(S,axis=1)
         for i in range(0,xlen):
             weight=weight+RowSum[i,0]
@@ -184,6 +184,10 @@ class Freebody:
                 self.yCOM=(self.yCOM*xdim/xlen+self.yveloc*dt)xdim/xlen
                 self.xveloc=self.xveloc+self.xaccel*dt
                 self.yveloc=self.yveloc+self.yaccel*dt
+                rotate(self.omega*dt)
+                self.omega=self.omega+self.omegaDot*dt
+                
+                if (xCOM-xCOMOld)>
 
 
 
