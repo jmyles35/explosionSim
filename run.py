@@ -23,7 +23,7 @@ def setup():
     params = ["vx", "vy", "T", "p", "P"]
     mat = np.random.rand(100,32,32,5)
     shape = mat.shape
-    d = {t: {x: {y: dict(zip(params, mat[t][x][y])) for y in range(shape[2])} for x in range(shape[1])} for t in range(shape[0])}
+    d = {str(t): {str(x): {str(y): dict(zip(params, mat[t][x][y])) for y in range(shape[2])} for x in range(shape[1])} for t in range(shape[0])}
     return d
 
 
