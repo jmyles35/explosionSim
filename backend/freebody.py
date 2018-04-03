@@ -225,7 +225,7 @@ class Freebody:
 
     def checkwalls(self:
         ColumnSum=np.sum(self.S,axis=0)
-        if [ColumnSum[0,0] > 0 or ColumnSum[0,xlen-1]>0:
+        if ((ColumnSum[0,0] > 0) or ColumnSum[0,xlen-1]>0):
             self.xveloc=-0.6*self.xveloc
         RowSum=np.sum(self.S,axis=1)
         if [RowSum[0,0] > 0 or RowSum[xlen-1,0]>0:
