@@ -61,6 +61,24 @@ class Freebody:
                 weight=weight+(pow(i-self.xCOM,2)+pow(j-self.yCOM,2))*xdim/xlan*ydim/ylen
         self.inertia=self.density*weight
 
+    def getCOM(self):
+        "returns the current center of mass on the screen, NOT the true center of mass which is tracked via the self.xCOM and self.yCOM functions"
+
+        ColumnSum=np.sum(S,axis=0)
+        Sum=np.sum(S)
+        weight=0.0
+        for i in range(0,xlen):
+            weight=weight+i*ColumnSum[0,i]
+        xCOM=weight/Sum
+
+        weight=0.0
+        RowSum=np.sum(S,axis=1)
+        for i in range(0,xlen):
+            weight=weight+i*RowSum[i,0]
+        weight/Sum
+
+        return yCOM,xCOM
+
 
     def update(self, timestep, explosionMatrix, dt):
         """
@@ -168,10 +186,9 @@ class Freebody:
                 self.xaccel=Fx/self.mass
                 self.yaccel=Fy/self.mass
                 self.omegaDot=T/self.Inertia
-                xCOMOld=self.xCOM
-                yCOMOld=self.yCOM
-                self.xCOM=self.xCOM+self.xveloc*dt
-                self.yCOM=self.yCOM+self.yveloc*dt
+                yCOMOld,XCOMOld=self.getCOM()
+                self.xCOM=(self.xCOM*xdim/xlen+self.xveloc*dt)/(xdim/xlen)
+                self.yCOM=(self.yCOM*xdim/xlen+self.yveloc*dt)xdim/xlen
                 self.xveloc=self.xveloc+self.xaccel*dt
                 self.yveloc=self.yveloc+self.yaccel*dt
 
