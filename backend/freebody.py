@@ -62,7 +62,10 @@ class Freebody:
         self.inertia=self.density*weight
 
     def getCOM(self):
-        "returns the current center of mass on the screen, NOT the true center of mass which is tracked via the self.xCOM and self.yCOM functions"
+        """
+        returns the current center of mass on the screen, NOT the true center
+        of mass which is tracked via the self.xCOM and self.yCOM
+        """
 
         ColumnSum=np.sum(S,axis=0)
         Sum=np.sum(S)
@@ -82,7 +85,12 @@ class Freebody:
 
     def update(self, timestep, explosionMatrix, dt):
         """
-        #TODO: Lemon, pls write an explanation of what you are doing...
+        updating all the values of the object: vel, ang vel, positions
+        Checks all of the neighbors of a point and determines the angle between them,
+        straight up, 45, 90
+        Looks around the angle, more object, or empty space with Pressure
+        Computes force and forces on the face
+
         """
         Fx=0
         Fy=0
@@ -194,7 +202,7 @@ class Freebody:
 
 
 
-    def getNeighbours(self, x,y):
+    def getNeighbours(self, x, y):
         """
         Returns the neighbors (8 verticies) nearest to a point
         """
