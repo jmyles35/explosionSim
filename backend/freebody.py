@@ -29,7 +29,7 @@ class Freebody:
         self.startPoint = startPoint
         self.yveloc=0
         self.xveloc=0
-        
+
         xlen,ylen=S.shape
         weight=0
         ColumnSum=np.sum(S,axis=0)
@@ -38,7 +38,7 @@ class Freebody:
         for i in range(0,xlen):
             weight=weight+i*ColumnSum[0,i]
         xCOM=weight/Sum
-    
+
         weight=0
         RowSum=np.sum(S,axis=1)
         for i in range(0,xlen):
@@ -53,16 +53,16 @@ class Freebody:
         for i in range(0,xlen):
             for j in range(0,ylen):
                 neighbours=getNeighbours(i,j)
-                
-                    
-                
-                
+
+
+
+
     def getNeighbours(self, x,y):
        return [self.S[x,y+1],self.S[x+1,y+1],self.S[x+1,y],self.S[x+1,y-1],self.S[x,y-1],self.S[x-1,y-1],self.S[x-1,y],self.S[x-1,y+1],]
-        
-                
-                
-                
+
+
+
+
 
 
 
