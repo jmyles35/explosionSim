@@ -20,27 +20,25 @@ class Freebody:
         This is the initialization/constructor function
         for the Freebody function
         """
-        #TODO: replace params with the parameters you want to take in
 
         # Initilize the attributes of the object
-        self.S = S
-        self.xdim = xdim
-        self.ydim = ydim
+        self.S          = S
+        self.xdim       = xdim
+        self.ydim       = ydim
         self.startPoint = startPoint
-        self.yveloc=0.0
-        self.xveloc=0.0
-        self.omega=0.0
-        self.xaccel=0.0
-        self.yaccel=0.0
-        self.omegaDot=0.0
-        self.density=density
+        self.yveloc     = 0.0
+        self.xveloc     = 0.0
+        self.omega      = 0.0
+        self.xaccel     = 0.0
+        self.yaccel     = 0.0
+        self.omegaDot   = 0.0
+        self.density    = density
 
 
         self.xlen,self.ylen=self.S.shape
         weight=0.0
         ColumnSum=np.sum(S,axis=0)
         Sum=np.sum(S)
-        weight=0.0
         for i in range(0,xlen):
             weight=weight+i*ColumnSum[0,i]
         self.xCOM=weight/Sum
@@ -51,7 +49,7 @@ class Freebody:
             weight=weight+i*RowSum[i,0]
         self.yCOM=weight/Sum
 
-        weight=0..0
+        weight=0.0
         RowSum=np.sum(S,axis=1)
         for i in range(0,xlen):
             weight=weight+RowSum[i,0]
@@ -64,10 +62,9 @@ class Freebody:
         self.inertia=self.density*weight
 
 
-
     def update(self, timestep, explosionMatrix, dt):
         """
-        Updates the blah blah blah...
+        #TODO: Lemon, pls write an explanation of what you are doing...
         """
         Fx=0
         Fy=0
@@ -181,6 +178,9 @@ class Freebody:
 
 
     def getNeighbours(self, x,y):
+        """
+        Returns the neighbors (8 verticies) nearest to a point
+        """
        return [0,self.S[y+1,x],self.S[y+1,x+1],self.S[y,x+1],self.S[y-1,x+1],self.S[y-1,x],self.S[y-1,x-1],self.S[y,x-1],self.S[y+1,x-1],]
 
 
@@ -200,13 +200,13 @@ class Freebody:
 
 
      def rotate_coords(x, y, theta, ox, oy):
-    """Rotate arrays of coordinates x and y by theta radians about the
-    point (ox, oy).
-
-    """
-    s, c = np.sin(theta), np.cos(theta)
-    x, y = np.asarray(x) - ox, np.asarray(y) - oy
-    return x * c - y * s + ox, x * s + y * c + oy
+        """
+        Rotate arrays of coordinates x and y by theta radians about the
+        point (ox, oy).
+        """
+        s, c = np.sin(theta), np.cos(theta)
+        x, y = np.asarray(x) - ox, np.asarray(y) - oy
+        return x * c - y * s + ox, x * s + y * c + oy
 
 
 
