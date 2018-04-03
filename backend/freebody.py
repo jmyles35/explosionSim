@@ -94,11 +94,11 @@ class Freebody:
 
                     if neighbours(7)==1:
 
-                        if (neighbours(8)==0 && neighbours(1)==0):
+                        if neighbours(8)==0 and neighbours(1)==0:
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                        if neighbours(6)==0 && neighbours(5)==0:
+                        if neighbours(6)==0 and neighbours(5)==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
@@ -116,11 +116,11 @@ class Freebody:
 
                     if neighbours(1)==1:
 
-                        if (neighbours(7)==0 && neighbours(8)==0):
+                        if (neighbours(7)==0 and neighbours(8)==0):
                             Fx=Fx+explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                        if (neighbours(2)==0 && neighbours(3)==0):
+                        if (neighbours(2)==0 and neighbours(3)==0):
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
@@ -139,11 +139,11 @@ class Freebody:
 
                     if neighbours(3)==1:
 
-                        if (neighbours(2)==0 && neighbours(1)==0):
+                        if (neighbours(2)==0 and neighbours(1)==0):
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                        if neighbours(4)==0 && neighbours(5)==0:
+                        if neighbours(4)==0 and neighbours(5)==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
@@ -162,11 +162,11 @@ class Freebody:
 
                     if neighbours(5)==1:
 
-                        if (neighbours(7)==0 && neighbours(6)==0):
+                        if (neighbours(7)==0 and neighbours(6)==0):
                             Fx=Fx+explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                        if (neighbours(4)==0 && neighbours(3)==0):
+                        if (neighbours(4)==0 and neighbours(3)==0):
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
