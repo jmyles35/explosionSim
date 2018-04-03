@@ -22,7 +22,7 @@ import seaborn as sns; sns.set()
 class ExplosionSim:
     initV = 0 #m/s C4
     initT = 290 #K no idea
-    initPres = 310 * 10**9 #310 kBar?? for C4 (appears to work with 31 bar?)
+    initPres = 31 * 10**9 #310 kBar?? for C4 (appears to work with 31 bar?)
     initDens = 700 #kg/m^3
     PATM = 101325.0 #pa
     R = 287.05 #air
@@ -281,21 +281,21 @@ class ExplosionSim:
 
             
 #            we should dissipate some energy along the walls 
-            for j in range(self.width):
-                self.lattice[2,j].vx = self.lattice[2,j].vx * ExplosionSim.ENERGYFACTOR
-                self.lattice[j,2].vx = self.lattice[j,2].vx * ExplosionSim.ENERGYFACTOR
-                self.lattice[self.width - 3,j].vx = self.lattice[self.width - 3,j].vx * ExplosionSim.ENERGYFACTOR
-                self.lattice[j,self.width - 3].vx = self.lattice[j,self.width - 3].vx * ExplosionSim.ENERGYFACTOR
-                
-                self.lattice[2,j].vy = self.lattice[2,j].vy * ExplosionSim.ENERGYFACTOR
-                self.lattice[j,2].vy = self.lattice[j,2].vy * ExplosionSim.ENERGYFACTOR
-                self.lattice[self.width - 3,j].vy = self.lattice[self.width - 3,j].vy * ExplosionSim.ENERGYFACTOR
-                self.lattice[j,self.width - 3].vy = self.lattice[j,self.width - 3].vy * ExplosionSim.ENERGYFACTOR
-                
-                self.lattice[2,j].temp = self.lattice[2,j].temp - (self.lattice[2,j].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
-                self.lattice[j,2].temp = self.lattice[j,2].temp - (self.lattice[j,2].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
-                self.lattice[self.width - 3,j].temp = self.lattice[self.width - 3,j].temp - (self.lattice[self.width - 3,j].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
-                self.lattice[j,self.width - 3].temp = self.lattice[j,self.width - 3].temp - (self.lattice[j,self.width - 3].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
+#            for j in range(self.width):
+#                self.lattice[2,j].vx = self.lattice[2,j].vx * ExplosionSim.ENERGYFACTOR
+#                self.lattice[j,2].vx = self.lattice[j,2].vx * ExplosionSim.ENERGYFACTOR
+#                self.lattice[self.width - 3,j].vx = self.lattice[self.width - 3,j].vx * ExplosionSim.ENERGYFACTOR
+#                self.lattice[j,self.width - 3].vx = self.lattice[j,self.width - 3].vx * ExplosionSim.ENERGYFACTOR
+#                
+#                self.lattice[2,j].vy = self.lattice[2,j].vy * ExplosionSim.ENERGYFACTOR
+#                self.lattice[j,2].vy = self.lattice[j,2].vy * ExplosionSim.ENERGYFACTOR
+#                self.lattice[self.width - 3,j].vy = self.lattice[self.width - 3,j].vy * ExplosionSim.ENERGYFACTOR
+#                self.lattice[j,self.width - 3].vy = self.lattice[j,self.width - 3].vy * ExplosionSim.ENERGYFACTOR
+#                
+#                self.lattice[2,j].temp = self.lattice[2,j].temp - (self.lattice[2,j].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
+#                self.lattice[j,2].temp = self.lattice[j,2].temp - (self.lattice[j,2].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
+#                self.lattice[self.width - 3,j].temp = self.lattice[self.width - 3,j].temp - (self.lattice[self.width - 3,j].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
+#                self.lattice[j,self.width - 3].temp = self.lattice[j,self.width - 3].temp - (self.lattice[j,self.width - 3].temp - ExplosionSim.TAMBIENT) * (1.0 - ExplosionSim.ENERGYFACTOR)
 
                 for i in range(self.width):
                     self.lattice[i,j].vx = self.lattice[i,j].vx * 0.99999
@@ -351,10 +351,10 @@ class ExplosionSim:
         #find squigle velocity and mean velocity, place into 4 matrices
         for i in range(2, self.width - 2):
             for j in range(2, self.width - 2):
-                self.vx[i,j] = self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
-                self.vy[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
-                self.vxAvg[i,j] =  self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt / 2.0, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
-                self.vyAvg[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt / 2.0, -1 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vx[i,j] = self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt, -1.0 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vy[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt, -1.0 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vxAvg[i,j] =  self.bound(self.lattice[i,j].vx + self.accelx[i,j] * self.dt / 2.0, -1.0 * ExplosionSim.VMAX, ExplosionSim.VMAX)
+                self.vyAvg[i,j] =  self.bound(self.lattice[i,j].vy + self.accely[i,j] * self.dt / 2.0, -1.0 * ExplosionSim.VMAX, ExplosionSim.VMAX)
     
     #######
     def approxTemps(self):
@@ -362,14 +362,6 @@ class ExplosionSim:
         for i in range(2, self.width - 2):
             for j in range(2, self.width - 2):
         
-    #            self.tempNext[i,j] = self.lattice[i,j].temp + self.dt / (cv * self.lattice[i,j].dens) * (
-    #                    k * self.lattice[i,j].temp * (self.lattice[i,j+1].temp - 2 * self.lattice[i,j].temp + self.lattice[i,j-1].temp 
-    #                               + self.lattice[i+1,j].temp - 2 * self.lattice[i,j].temp + self.lattice[i-1,j].temp) / (self.dx**2) 
-    #                    - self.lattice[i,j].pres * (self.vxAvg[i+1,j]- self.vxAvg[i-1,j] + vyAvg[i,j+1]- self.vyAvg[i,j-1]) / self.dx
-    #                    + -2.0 * ExplosionSim.visc / 3 * (self.vxAvg[i+1,j]- self.vxAvg[i-1,j] + self.vyAvg[i,j+1]- self.vyAvg[i,j-1]) / self.dx
-    #                    + ExplosionSim.visc / 2.0 * (self.vyAvg[i+1,j]- self.vyAvg[i-1,j] + self.vxAvg[i,j+1]- self.vxAvg[i,j-1])**2 / (self.dx**2) 
-    #                    )
-    
     ##REGULAR
                 self.tempChange[i,j] = self.dt / (ExplosionSim.cv * self.lattice[i,j].dens) * (
                         ExplosionSim.k * (self.lattice[i,j+1].temp - 2 * self.lattice[i,j].temp + self.lattice[i,j-1].temp 
@@ -451,8 +443,8 @@ class ExplosionSim:
             for j in range(2, self.width - 2):
                 
                 #3RD ORDER
-                self.vxAvgADV[i,j] = self.vx[i,j] - self.dt * (self.vxAvg[i,j] * (-1.0/12 *self.vx[i+2,j] + 2.0/3 *self.vx[i+1,j] - 2.0/3 * self.vx[i-1,j] + 1.0/12 * self.vx[i-2,j])/ self.dx 
-                       + self.vyAvg[i,j] * (-1.0/12 *self.vx[i,j+2] + 2.0/3 *self.vx[i,j+1] - 2.0/3 * self.vx[i,j-1] + 1.0/12 * self.vx[i,j-2])/ self.dx)
+                self.vxAvgADV[i,j] = self.bound(self.vx[i,j] - self.dt * (self.vxAvg[i,j] * (-1.0/12 *self.vx[i+2,j] + 2.0/3 *self.vx[i+1,j] - 2.0/3 * self.vx[i-1,j] + 1.0/12 * self.vx[i-2,j])/ self.dx 
+                       + self.vyAvg[i,j] * (-1.0/12 *self.vx[i,j+2] + 2.0/3 *self.vx[i,j+1] - 2.0/3 * self.vx[i,j-1] + 1.0/12 * self.vx[i,j-2])/ self.dx), -1.0 * ExplosionSim.VMAX, ExplosionSim.VMAX)
                 ####This is the problem line
                 ####IMPROVE ALGORITHM TO CONVECT
     #            self.vxHat[i,j] = self.vxAvgADV[i,j] + self.dt * (self.vxAvg[i,j] * (self.vxAvgADV[i+1,j] - self.vxAvgADV[i-1,j])/ self.dx / 2.0 
