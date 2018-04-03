@@ -5,9 +5,6 @@ $(document).ready(function () {
         document.getElementById('container').innerHTML = "";
     }
 
-    var dataArr = JSON.parse( document.getElementById('dataScript').textContent );
-
-    console.log("Hello");
     // Texture width for simulation -- 32 SEEMS OPTIMAL
     var WIDTH = 16;
     var NUM_TEXELS = WIDTH * WIDTH;
@@ -412,6 +409,7 @@ $(document).ready(function () {
                meshColor.setX(count, instP);
                meshColor.setY(count, instP);
                meshColor.setZ(count, instP);
+               count++;
            }
        }
 
