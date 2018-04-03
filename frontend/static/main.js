@@ -352,18 +352,8 @@ $(document).ready(function () {
     }
 
     function VelocityField() {
-        var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
-        var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
-
-        for ( var i = 0; i < 10; i++ ) {
-
-            smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
-
-            smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
-
-        }
+        var data = loadData();
+        console.log(String(data));
     }
 
     function PressureField() {
@@ -381,6 +371,9 @@ $(document).ready(function () {
         }
     }
 
+    function loadData() {
+        return data
+    }
 
     function onWindowResize() {
 
