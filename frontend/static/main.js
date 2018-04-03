@@ -6,7 +6,7 @@ $(document).ready(function () {
     }
 
     // Texture width for simulation -- 32 SEEMS OPTIMAL
-    var WIDTH = 32;
+    var WIDTH = 64;
     var NUM_TEXELS = WIDTH * WIDTH;
 
     // Size in system units
@@ -90,6 +90,9 @@ $(document).ready(function () {
                 boxMesh.material.wireframe = ! boxMesh.material.wireframe;
                 sphereMesh.material.wireframe = ! sphereMesh.material.wireframe;
             }
+            if ( event.keyCode === 69) {
+                addExplosion();
+            }
 
         } , false );
 
@@ -101,7 +104,7 @@ $(document).ready(function () {
         document.body.appendChild( stats.dom );
 
         var effectController = {
-            mouseSize: 20.0,
+            explosionSize: 20.0,
             viscosity: 0.03,
             sphereRadius: 20,
             boxSide: 20
@@ -109,7 +112,7 @@ $(document).ready(function () {
 
         var valuesChanger = function() {
 
-            heightmapVariable.material.uniforms.mouseSize.value = effectController.mouseSize;
+            heightmapVariable.material.uniforms.explosionSize.value = effectController.explosionSize;
             heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
         };
         var geometryChanger = function() {
@@ -121,18 +124,13 @@ $(document).ready(function () {
             boxMesh.geometry = new THREE.BoxGeometry( newSide, newSide, newSide );
         };
 
-        gui.add( effectController, "mouseSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
+        gui.add( effectController, "explosionSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
         gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
 
         gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
         gui.add( effectController, "boxSide", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
-        var buttonSmooth = {
-            SmoothField: function() {
-                SmoothField();
-            }
-        };
         var buttonDensity = {
             DensityField: function() {
                 DensityField();
@@ -153,11 +151,6 @@ $(document).ready(function () {
                 VelocityField();
             }
         };
-        var buttonExplosion = {
-            AddExplosion: function() {
-                Explosion();
-            }
-        };
         var buttonSphere = {
             ToggleSphere: function() {
                 sphereMesh.material.visible = ! sphereMesh.material.visible;
@@ -170,12 +163,10 @@ $(document).ready(function () {
         };
 
         // Add buttons to the GUI.
-        gui.add( buttonSmooth, 'SmoothField' );
         gui.add( buttonDensity, 'DensityField' );
         gui.add( buttonVel, 'VelocityField' );
         gui.add( buttonPres, 'PressureField' );
         gui.add( buttonTemp, 'TemperatureField' );
-        gui.add( buttonExplosion, 'AddExplosion' );
         gui.add( buttonSphere, 'ToggleSphere' );
         gui.add( buttonBox, 'ToggleBox' );
 
@@ -281,7 +272,7 @@ $(document).ready(function () {
         gpuCompute.setVariableDependencies( heightmapVariable, [ heightmapVariable ] );
 
         heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2( 10000, 10000 ) };
-        heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
+        heightmapVariable.material.uniforms.explosionSize = { value: 20.0 };
         heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
         heightmapVariable.material.defines.BOUNDS = BOUNDS.toFixed( 1 );
 
@@ -300,7 +291,6 @@ $(document).ready(function () {
 
         var geometry = new THREE.SphereGeometry( 20, 32, 32 );
         var material = new THREE.MeshNormalMaterial();
-        material.visible = false;
 
         sphereMesh = new THREE.Mesh( geometry, material );
 
@@ -356,7 +346,7 @@ $(document).ready(function () {
     /*
      * Causes the Mesh to become stationary (eliminate all noise).
      */
-    function SmoothField() {
+    function addExplosion() {
 
         var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
         var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
@@ -371,30 +361,6 @@ $(document).ready(function () {
         }
     }
 
-    /*
-     * Function to create an explosion in centre
-     */
-
-    function Explosion() {
-        /*
-        var explosionShader = gpuCompute.createShaderMaterial( document.getElementById( 'waterVertexShader' ).textContent, {
-            mouseSize: 10,
-            viscosityConstant: 0.001
-        });
-
-        var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
-        var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
-
-        for ( var i = 0; i < 10; i++ ) {
-            // Trying to apply shader to material
-            explosionShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( explosionShader, alternateRenderTarget );
-
-            explosionShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( explosionShader, currentRenderTarget );
-        }
-        */
-    }
     /*
      * Reset color gradient state to default
      */

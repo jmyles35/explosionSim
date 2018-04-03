@@ -31,8 +31,8 @@
 	<body>
 
 		<div id="info">
-			<h4>Lagrangian Model for the Simulation of Explosions</h5> <br/>
-			Press mouse button to orbit around. 'W' key toggles wireframe.
+			<h2>Lagrangian Model for the Simulation of Explosions</h2> <br/>
+			Press mouse button to orbit around. <br> 'W' key toggles wireframe. 'E' key resets explosion.
 		</div>
 
 		<script src="static/three.js"></script>
@@ -51,7 +51,7 @@
             #include <common>
 
             vec2 mousePos;
-            uniform float mouseSize;
+            uniform float explosionSize;
             uniform float viscosityConstant;
 
             #define deltaTime ( 1.0 / (60.0) ) // 60 frames per second
@@ -80,13 +80,14 @@
 
                 // Dynamics
                 heightmapValue.y += accel;
-                heightmapValue.x += heightmapValue.y * deltaTime - 0.05;
+                heightmapValue.x += heightmapValue.y * deltaTime - (explosionSize/1000.0) ;
+
 
                 // Viscosity
                 heightmapValue.x += sump * viscosityConstant;
 
                 // Mouse influence
-                float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+                float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / explosionSize, 0.0, PI );
                 heightmapValue.x += cos( mousePhase ) + 1.0;
 
                 gl_FragColor = heightmapValue;
