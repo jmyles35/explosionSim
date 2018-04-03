@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang=en><head><title>three.js webgl - gpgpu - water</title><meta charset=utf-8><meta name=viewport content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1"><style>body {
+<!DOCTYPE html><html lang=en><head><title>explosionSim</title><meta charset=utf-8><meta name=viewport content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1"><style>body {
 				background-color: #424242;
 				margin: 0px;
 				overflow: hidden;
@@ -21,7 +21,7 @@
 
             uniform vec2 mousePos;
             uniform float mouseSize;
-            uniform float viscosityConstant;
+            uniform float explosions;
 
             #define deltaTime ( 1.0 / (60.0) ) // 60 frames per second
             #define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
@@ -52,7 +52,7 @@
                 heightmapValue.x += heightmapValue.y * deltaTime;
 
                 // Viscosity
-                heightmapValue.x += sump * viscosityConstant;
+                heightmapValue.x += sump * explosions;
 
                 // Mouse influence
                 float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
@@ -148,4 +148,4 @@
                 #include <envmap_vertex>
                 #include <shadowmap_vertex>
 
-            }</script><script src=http://code.jquery.com/jquery.min.js></script><script>var data = {{ message|tojson }};</script><script type=text/javascript src=static/main.js></script><script type=text/javascript src=/static/js/manifest.5d814591d4c84454bd9f.js></script><script type=text/javascript src=/static/js/vendor.170318b1383cd699d69d.js></script><script type=text/javascript src=/static/js/app.e103a50514d9bc8c92f2.js></script></body></html>
+            }</script><script src=http://code.jquery.com/jquery.min.js></script><script>var data = {{ message|tojson }};</script><script type=text/javascript src=static/main.js?2></script><script type=text/javascript src=/static/js/manifest.5d814591d4c84454bd9f.js></script><script type=text/javascript src=/static/js/vendor.170318b1383cd699d69d.js></script><script type=text/javascript src=/static/js/app.e103a50514d9bc8c92f2.js></script></body></html>

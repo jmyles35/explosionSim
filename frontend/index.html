@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - gpgpu - water</title>
+		<title>explosionSim</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -53,7 +53,7 @@
 
             uniform vec2 mousePos;
             uniform float mouseSize;
-            uniform float viscosityConstant;
+            uniform float explosions;
 
             #define deltaTime ( 1.0 / (60.0) ) // 60 frames per second
             #define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
@@ -84,7 +84,7 @@
                 heightmapValue.x += heightmapValue.y * deltaTime;
 
                 // Viscosity
-                heightmapValue.x += sump * viscosityConstant;
+                heightmapValue.x += sump * explosions;
 
                 // Mouse influence
                 float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
@@ -202,6 +202,6 @@
 		<script>
 			var data = {{ message|tojson }};
 		</script>
-        <script type="text/javascript" src="static/main.js"></script>
+        <script type="text/javascript" src="static/main.js?2"></script>
     </body>
 </html>

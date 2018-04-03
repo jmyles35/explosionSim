@@ -110,18 +110,18 @@ $(document).ready(function () {
 
         var effectController = {
             mouseSize: 20.0,
-            viscosity: 0.03
+            explosions: 1
         };
 
         var valuesChanger = function() {
 
             heightmapVariable.material.uniforms.mouseSize.value = effectController.mouseSize;
-            heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
+            heightmapVariable.material.uniforms.explosions.value = effectController.explosions;
 
         };
 
-        gui.add( effectController, "mouseSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
-        gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
+        //gui.add( effectController, "mouseSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
+        gui.add( effectController, "explosions", 1, 4, 1 ).onChange( valuesChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonSmooth = {
@@ -236,7 +236,7 @@ $(document).ready(function () {
 
         heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2( 10000, 10000 ) };
         heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
-        heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
+        heightmapVariable.material.uniforms.explosions = { value: 1 };
         heightmapVariable.material.defines.BOUNDS = BOUNDS.toFixed( 1 );
 
         var error = gpuCompute.init();
@@ -274,7 +274,7 @@ $(document).ready(function () {
                 var x = i * 128 / WIDTH;
                 var y = j * 128 / WIDTH;
 
-                    pixels[ p + 0 ] = noise( x, y, 123.4 );
+                pixels[ p + 0 ] = noise( x, y, 123.4 );
                 pixels[ p + 1 ] = 0;
                 pixels[ p + 2 ] = 0;
                 pixels[ p + 3 ] = 1;
@@ -352,7 +352,7 @@ $(document).ready(function () {
     }
 
     function VelocityField() {
-        var data = loadData();
+        var data = loadData
         console.log(String(data));
     }
 
