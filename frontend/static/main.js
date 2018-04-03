@@ -374,8 +374,9 @@ $(document).ready(function () {
     /*
      * Function to create an explosion in centre
      */
-    function Explosion() {
 
+    function Explosion() {
+        /*
         var explosionShader = gpuCompute.createShaderMaterial( document.getElementById( 'waterVertexShader' ).textContent, {
             mouseSize: 10,
             viscosityConstant: 0.001
@@ -392,6 +393,7 @@ $(document).ready(function () {
             explosionShader.uniforms.texture.value = alternateRenderTarget.texture;
             gpuCompute.doRenderTarget( explosionShader, currentRenderTarget );
         }
+        */
     }
     /*
      * Reset color gradient state to default
