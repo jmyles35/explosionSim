@@ -53,7 +53,7 @@ $(document).ready(function () {
     init();
     animate();
     console.log("Test Data:");
-    console.log(window.arrData[0][0][0]['T']);
+    console.log(window.objData[0][0][0]['T']);
     console.log("Data Size:");
     console.log(DATA_SIZE);
 

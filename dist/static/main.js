@@ -6,7 +6,7 @@ $(document).ready(function () {
     }
 
     // Texture width for simulation -- 32 SEEMS OPTIMAL
-    var WIDTH = 16;
+    var WIDTH = 32;
     var NUM_TEXELS = WIDTH * WIDTH;
 
     // Size in system units
@@ -16,6 +16,12 @@ $(document).ready(function () {
     // Size in terms of number of vertices
     var SIZE = BOUNDS_HALF - 1;
     var HALF_SIZE = SIZE / 2;
+
+    var DEFAULT_FIELD = 0;
+    var DENSITY_FIELD = 1;
+    var TEMPERATURE_FIELD = 2;
+    var PRESSURE_FIELD = 3;
+    var displayField = 0;
 
     var container, stats;
     var camera, scene, renderer, controls;
@@ -39,11 +45,17 @@ $(document).ready(function () {
     var windowHalfY = window.innerHeight / 2;
 
     var colors = []; // Need for gradient
-    var colorsDefault;
+
+    var timeStep = 0;
+    var TIME_DIV_FACTOR = 2;
+    var DATA_SIZE = Object.keys(window.arrData).length;
 
     init();
     animate();
-    console.log(window.arrData[0][0][0]['T']);
+    console.log("Test Data:");
+    console.log(window.objData[0][0][0]['T']);
+    console.log("Data Size:");
+    console.log(DATA_SIZE);
 
 
     /*
@@ -89,11 +101,7 @@ $(document).ready(function () {
                 waterMesh.material.wireframe = ! waterMesh.material.wireframe;
                 waterMesh.material.needsUpdate = true;
 
-                boxMesh.material.wireframe = ! boxMesh.material.wireframe;
                 sphereMesh.material.wireframe = ! sphereMesh.material.wireframe;
-            }
-            if ( event.keyCode === 69) {
-                addExplosion();
             }
 
         } , false );
@@ -106,51 +114,36 @@ $(document).ready(function () {
         document.body.appendChild( stats.dom );
 
         var effectController = {
-            explosionSize: 20.0,
-            viscosity: 0.03,
-            sphereRadius: 20,
-            boxSide: 20
+            sphereRadius: 10,
+            boxSide: 15,
+            timeFactor: 0.1
         };
 
-        var valuesChanger = function() {
-
-            heightmapVariable.material.uniforms.explosionSize.value = effectController.explosionSize;
-            heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
-        };
         var geometryChanger = function() {
 
             var newRadius = effectController.sphereRadius;
-            sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 32, 32 );
+            sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 16, 16 );
 
-            var newSide = effectController.boxSide;
-            boxMesh.geometry = new THREE.BoxGeometry( newSide, newSide, newSide );
+            TIME_DIV_FACTOR = 1 / effectController.timeFactor;
         };
 
-        gui.add( effectController, "explosionSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
-        gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
-
         gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
-        gui.add( effectController, "boxSide", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
+        gui.add( effectController, "timeFactor", 0.1, 2, 0.1 ).onChange( geometryChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
             DensityField: function() {
-                DensityField();
+                displayField = 1;
             }
         };
         var buttonTemp = {
             TemperatureField: function() {
-                TemperatureField();
+                displayField = 2;
             }
         };
         var buttonPres = {
             PressureField: function() {
-                PressureField();
-            }
-        };
-        var buttonVel = {
-            VelocityField: function() {
-                VelocityField();
+                displayField = 3;
             }
         };
         var buttonSphere = {
@@ -158,33 +151,37 @@ $(document).ready(function () {
                 sphereMesh.material.visible = ! sphereMesh.material.visible;
             }
         };
-        var buttonBox = {
-            ToggleBox: function() {
-                boxMesh.material.visible = ! boxMesh.material.visible;
-            }
-        };
 
         // Add buttons to the GUI.
         gui.add( buttonDensity, 'DensityField' );
-        gui.add( buttonVel, 'VelocityField' );
         gui.add( buttonPres, 'PressureField' );
         gui.add( buttonTemp, 'TemperatureField' );
         gui.add( buttonSphere, 'ToggleSphere' );
-        gui.add( buttonBox, 'ToggleBox' );
 
         initWater();
 
         initSphere();
-
-        initBox();
-
-        valuesChanger();
     }
 
-    function initMaterial() {
-        // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-        var materialColor = 0xFFFFFF;
+    function initWater() {
 
+        var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1 );
+
+        // Initializing the colors
+        for ( var i = 0; i <= HALF_SIZE; i++ ) {
+            var y = i - HALF_SIZE;
+
+            for ( var j = 0; j <= HALF_SIZE; j++ ) {
+
+                colors.push( 0, 0, 1.0 );
+            }
+        }
+
+        // Add 'color' to possible attributes of geometry
+        geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+        geometry.getAttribute( 'color' ).setDynamic(true);
+
+        // Water material
         var material = new THREE.ShaderMaterial( {
             uniforms: THREE.UniformsUtils.merge( [
                 THREE.ShaderLib[ 'phong' ].uniforms,
@@ -201,7 +198,7 @@ $(document).ready(function () {
         material.lights = true;
 
         // Material attributes from MeshPhongMaterial
-        material.color = new THREE.Color( materialColor );
+        material.color = new THREE.Color( 0xFFFFFF );
         material.specular = new THREE.Color( 0x111111 );
         material.shininess = 0;
 
@@ -214,34 +211,6 @@ $(document).ready(function () {
         // Defines
         material.defines.WIDTH = WIDTH.toFixed( 1 );
         material.defines.BOUNDS = BOUNDS.toFixed( 1 );
-
-        return material;
-    }
-
-    function initWater() {
-
-        var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1 );
-
-        for ( var i = 0; i <= HALF_SIZE; i++ ) {
-            var y = i - HALF_SIZE;
-
-            for ( var j = 0; j <= HALF_SIZE; j++ ) {
-                var x = j - HALF_SIZE;
-
-                var r = ( x / SIZE ) + 0.5; // Test gradient
-                var g = ( y / SIZE ) + 0.5;
-
-                colors.push( r, g, 0.7 );
-            }
-        }
-
-        // Add 'color' to possible attributes of geometry
-        geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-        geometry.getAttribute( 'color' ).setDynamic(true);
-        colorsDefault = geometry.getAttribute( 'color' ).clone();
-
-        // Water material
-        var material = initMaterial();
         waterUniforms = material.uniforms;
 
         // Water mesh
@@ -260,7 +229,6 @@ $(document).ready(function () {
         meshRay.matrixAutoUpdate = false;
         meshRay.updateMatrix();
         scene.add( meshRay );
-
 
         // Creates the gpu computation class and sets it up
         gpuCompute = new GPUComputationRenderer( WIDTH, WIDTH, renderer );
@@ -291,23 +259,13 @@ $(document).ready(function () {
 
     function initSphere() {
 
-        var geometry = new THREE.SphereGeometry( 20, 32, 32 );
-        var material = new THREE.MeshNormalMaterial();
+        var geometry = new THREE.SphereGeometry( 10, 32, 32 );
+        var material = new THREE.MeshPhongMaterial();
+        material.visible = false;
 
         sphereMesh = new THREE.Mesh( geometry, material );
 
         scene.add( sphereMesh );
-    }
-
-    function initBox() {
-
-        var geometry = new THREE.BoxGeometry( 20, 20, 20 );
-        var material = new THREE.MeshNormalMaterial();
-        material.visible = false;
-
-        boxMesh = new THREE.Mesh( geometry, material );
-
-        scene.add( boxMesh );
     }
 
     function fillTexture( texture ) {
@@ -346,113 +304,146 @@ $(document).ready(function () {
     }
 
     /*
-     * Causes the Mesh to become stationary (eliminate all noise).
+     * Assign density to heights
      */
-    function addExplosion() {
+    function densityTexture( texture, time ) {
 
-        var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
-        var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+        var pixels = texture.image.data;
 
-        for ( var i = 0; i < 100; i++ ) {
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
 
-            smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+                var height = window.arrData[time][i][j]['p'] * 5;
 
-            smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
         }
     }
 
     /*
-     * Reset color gradient state to default
+     * Assign temperature to heights
      */
-    function DefaultField() {
+    function temperatureTexture( texture, time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
-        meshColor = colorsDefault;
+        var pixels = texture.image.data;
+
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
+
+                var height = window.arrData[time][i][j]['T'] * 5;
+
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
+        }
     }
+
+    /*
+     * Assign pressure to heights
+     */
+    function pressureTexture( texture, time ) {
+
+        var pixels = texture.image.data;
+
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
+
+                var height = window.arrData[time][i][j]['P'] * 10;
+
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
+        }
+    }
+
     /*
      * Maps DENSITY values to specific COLORS on the mesh.
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-    function DensityField() {
+    function DensityField( time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
+        var waterColor = waterMesh.geometry.getAttribute('color');
+        waterColor.needsUpdate = true;
+        var count = 0;
 
-        // Update the colors gradient
-        // i = index, TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setX(i, 0.5);
-            meshColor.setY(i, magnitude);
-            meshColor.setZ(i, magnitude);
+        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
+                var color = getColour(window.arrData[time][i][j]['p'], 1, 0);
+
+                waterColor.setX(count, color[0]);
+                waterColor.setY(count, color[1]);
+                waterColor.setZ(count, color[2]);
+                count++;
+            }
         }
     }
+
     /*
      * Maps PRESSURE values to specific COLORS on the mesh
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-     function PressureField() {
+     function PressureField( time ) {
 
-       var meshColor = waterMesh.geometry.getAttribute('color');
-       meshColor.needsUpdate = true;
+       var waterColor = waterMesh.geometry.getAttribute('color');
+       waterColor.needsUpdate = true;
        var count = 0;
 
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
-       for ( var i = 0; i <= WIDTH; i++ ) {
-           for ( var j = 0; j <= WIDTH; j++ ) {
-               var instP = dataArr['0'][i][j]['P'];
+       for ( var i = 0; i < WIDTH; i++ ) {
+           for ( var j = 0; j < WIDTH; j++ ) {
+               var color = getColour(window.arrData[time][i][j]['P'], 1, 0);
 
-               meshColor.setX(count, instP);
-               meshColor.setY(count, instP);
-               meshColor.setZ(count, instP);
+               waterColor.setX(count, color[0]);
+               waterColor.setY(count, color[1]);
+               waterColor.setZ(count, color[2]);
                count++;
            }
        }
-
      }
+
     /*
      * Maps TEMPERATURE values to specific COLORS on the mesh.
      * RED = HIGH, BLUE = LOW (can change color schemes).
      */
-    function TemperatureField() {
+    function TemperatureField( time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
+        var waterColor = waterMesh.geometry.getAttribute('color');
+        waterColor.needsUpdate = true;
+        var count = 0;
 
-        // Keeps track of vertex index.
-        // TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setY(i, 0.5);
-            meshColor.setX(i, magnitude);
-            meshColor.setZ(i, magnitude);
+        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
+                var color = getColour(window.arrData[time][i][j]['T'], 1, 0);
+
+                waterColor.setX(count, color[0]);
+                waterColor.setY(count, color[1]);
+                waterColor.setZ(count, color[2]);
+                count++;
+            }
         }
     }
+
     /*
-     * Maps VELOCITY values to specific COLORS on the mesh.
-     * GREEN = HIGH, BLUE = LOW (can change color schemes).
+     * Functions for adjusting window SIZE
      */
-    function VelocityField() {
-
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
-
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setZ(i, 0.5);
-            meshColor.setX(i, magnitude);
-            meshColor.setY(i, magnitude);
-        }
-    }
-
-
-    // need to add comments for rest of the functions below.
     function onWindowResize() {
 
         windowHalfX = window.innerWidth / 2;
@@ -463,6 +454,7 @@ $(document).ready(function () {
 
         renderer.setSize( window.innerWidth, window.innerHeight );
     }
+
 
     function setMouseCoords( x, y ) {
 
@@ -498,43 +490,42 @@ $(document).ready(function () {
         requestAnimationFrame( animate );
         render();
         stats.update();
+
+        if ( timeStep % TIME_DIV_FACTOR === 0 ) {
+            var smallTime = timeStep / TIME_DIV_FACTOR;
+
+            if (displayField === DENSITY_FIELD) DensityField( smallTime );
+            if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
+            if (displayField === PRESSURE_FIELD) PressureField( smallTime );
+            //if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
+        }
+        // Pause if default
+        if ( displayField != DEFAULT_FIELD ) {
+            if ((timeStep + 1)/TIME_DIV_FACTOR < DATA_SIZE) timeStep++;
+            else timeStep = 0;
+        }
     }
 
     function render() {
 
         // Set uniforms: mouse interaction
         var uniforms = heightmapVariable.material.uniforms;
-        /*
-        if ( mouseMoved ) {
-
-            this.raycaster.setFromCamera( mouseCoords, camera );
-
-            var intersects = this.raycaster.intersectObject( meshRay );
-
-            if ( intersects.length > 0 ) {
-                var point = intersects[ 0 ].point;
-                uniforms.mousePos.value.set( point.x, point.z );
-
-            }
-            else {
-                uniforms.mousePos.value.set( 10000, 10000 );
-            }
-
-            mouseMoved = false;
-        }
-        else {
-            uniforms.mousePos.value.set( 10000, 10000 );
-        }
-        */
 
         // Do the gpu computation
         gpuCompute.compute();
 
-        // Get compute output in custom uniform
-        waterUniforms.heightmap.value = gpuCompute.getCurrentRenderTarget( heightmapVariable ).texture;
+        if (timeStep % TIME_DIV_FACTOR === 0 ) {
 
-        // Render
-        renderer.render( scene, camera );
+            var smallTime = timeStep / TIME_DIV_FACTOR;
+            var heightmap = gpuCompute.createTexture();
+
+            if (displayField === DENSITY_FIELD) densityTexture( heightmap, smallTime );
+            if (displayField === TEMPERATURE_FIELD) temperatureTexture ( heightmap, smallTime );
+            if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
+
+            waterUniforms.heightmap.value = heightmap;
+            renderer.render( scene, camera );
+        }
     }
 
    /*
@@ -581,27 +572,6 @@ $(document).ready(function () {
 
       return returnColor;
 
-      // MIGHT NOT NEED THIS
-      // // Convert to hexadecimal
-      // var redHex = rgbToHex( red );
-      // var greenHex = rgbToHex( green );
-      // var blueHex = rgbToHex( blue );
-      //
-      // // concatenate the colour strings.
-      // var colour = redHex.concat( greenHex, blueHex );
-      //
-      // // colour is in the form 0x000000 (hopefully)...
-      // return colour;
     }
-
-    // Helper function for getColour. Works for 0 < rgb < 255.
-    // MIGHT NOT NEED THIS, COMMENTED OUT FOR NOW.
-    // var rgbToHex = function (rgb) {
-    //   var hex = Number(rgb).toString(16);
-    //   if (hex.length < 2) {
-    //     hex = "0" + hex;
-    //   }
-    //   return hex;
-    // };
 
 });
