@@ -5,13 +5,12 @@ $(document).ready(function () {
         document.getElementById('container').innerHTML = "";
     }
 
+    // Initialize data from file
     var arrData;
-    $.getJSON('./static/data.json', function(json) {
-        //alert(data);
-        arrData = json;
-    });
     console.log("Hello");
+    getData();
     console.log(arrData);
+
     // Texture width for simulation -- 32 SEEMS OPTIMAL
     var WIDTH = 16;
     var NUM_TEXELS = WIDTH * WIDTH;
@@ -50,6 +49,7 @@ $(document).ready(function () {
 
     init();
     animate();
+
 
     /*
      * Initialize camera, scene, and inital renders.
@@ -503,6 +503,14 @@ $(document).ready(function () {
         requestAnimationFrame( animate );
         render();
         stats.update();
+    }
+
+    function setData( json ) {
+        arrData = json;
+    }
+
+    function getData () {
+        $.getJSON('./static/data.json', setData);
     }
 
     function render() {
