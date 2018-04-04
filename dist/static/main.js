@@ -8,11 +8,14 @@ $(document).ready(function () {
     }
 
     // Initialize data from file
-    var arrData = require('static/data.json');
+    var arrData;
     console.log(arrData);
     function setData( json ) {
         arrData = json;
     }
+    $.getJSON("test.json", function(json) {
+        console.log(json); // this will show the info it in firebug console
+    });
 
     function getData () {
         $.getJSON('static/data.json', setData);
