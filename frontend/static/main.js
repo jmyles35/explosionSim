@@ -21,7 +21,6 @@ $(document).ready(function () {
     var DENSITY_FIELD = 1;
     var TEMPERATURE_FIELD = 2;
     var PRESSURE_FIELD = 3;
-    var VELOCITY_FIELD = 4;
     var displayField = 0;
 
     var container, stats;
@@ -46,12 +45,17 @@ $(document).ready(function () {
     var windowHalfY = window.innerHeight / 2;
 
     var colors = []; // Need for gradient
+
     var timeStep = 0;
+    var TIME_DIV_FACTOR = 2;
+    var DATA_SIZE = Object.keys(window.arrData).length;
 
     init();
     animate();
-    console.log("Test Data")
+    console.log("Test Data:");
     console.log(window.arrData[0][0][0]['T']);
+    console.log("Data Size:");
+    console.log(DATA_SIZE);
 
 
     /*
@@ -97,12 +101,12 @@ $(document).ready(function () {
                 waterMesh.material.wireframe = ! waterMesh.material.wireframe;
                 waterMesh.material.needsUpdate = true;
 
-                boxMesh.material.wireframe = ! boxMesh.material.wireframe;
+                //boxMesh.material.wireframe = ! boxMesh.material.wireframe;
                 sphereMesh.material.wireframe = ! sphereMesh.material.wireframe;
             }
-            if ( event.keyCode === 69) {
-                addExplosion();
-            }
+            //if ( event.keyCode === 69) {
+            //    addExplosion();
+            //}
 
         } , false );
 
@@ -114,31 +118,36 @@ $(document).ready(function () {
         document.body.appendChild( stats.dom );
 
         var effectController = {
-            explosionSize: 15.0,
-            viscosity: 0.03,
+            //explosionSize: 15.0,
+            //viscosity: 0.03,
             sphereRadius: 10,
-            boxSide: 20
+            boxSide: 15,
+            timeFactor: 0.1
         };
 
-        var valuesChanger = function() {
+        //var valuesChanger = function() {
 
-            heightmapVariable.material.uniforms.explosionSize.value = effectController.explosionSize;
-            heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
-        };
+            //heightmapVariable.material.uniforms.explosionSize.value = effectController.explosionSize;
+            //heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
+        //};
+
         var geometryChanger = function() {
 
             var newRadius = effectController.sphereRadius;
             sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 32, 32 );
 
-            var newSide = effectController.boxSide;
-            boxMesh.geometry = new THREE.BoxGeometry( newSide, newSide, newSide );
+            TIME_DIV_FACTOR = 1 / effectController.timeFactor;
+
+            //var newSide = effectController.boxSide;
+            //boxMesh.geometry = new THREE.BoxGeometry( newSide, newSide, newSide );
         };
 
-        gui.add( effectController, "explosionSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
-        gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
+        //gui.add( effectController, "explosionSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
+        //gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
 
         gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
-        gui.add( effectController, "boxSide", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
+        gui.add( effectController, "timeFactor", 0.1, 2, 0.1 ).onChange( geometryChanger );
+        //gui.add( effectController, "boxSide", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
@@ -156,80 +165,44 @@ $(document).ready(function () {
                 displayField = 3;
             }
         };
-        var buttonVel = {
-            VelocityField: function() {
-                displayField = 4;
-            }
-        };
+        //var buttonVel = {
+        //    VelocityField: function() {
+        //        displayField = 4;
+        //    }
+        //};
         var buttonSphere = {
             ToggleSphere: function() {
                 sphereMesh.material.visible = ! sphereMesh.material.visible;
             }
         };
-        var buttonBox = {
-            ToggleBox: function() {
-                boxMesh.material.visible = ! boxMesh.material.visible;
-            }
-        };
+        //var buttonBox = {
+        //    ToggleBox: function() {
+        //        boxMesh.material.visible = ! boxMesh.material.visible;
+        //    }
+        //};
 
         // Add buttons to the GUI.
         gui.add( buttonDensity, 'DensityField' );
-        gui.add( buttonVel, 'VelocityField' );
+        //gui.add( buttonVel, 'VelocityField' );
         gui.add( buttonPres, 'PressureField' );
         gui.add( buttonTemp, 'TemperatureField' );
         gui.add( buttonSphere, 'ToggleSphere' );
-        gui.add( buttonBox, 'ToggleBox' );
+        //gui.add( buttonBox, 'ToggleBox' );
 
         initWater();
 
         initSphere();
 
-        initBox();
+        //initBox();
 
-        valuesChanger();
-    }
-
-    function initMaterial() {
-        // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-        var materialColor = 0xFFFFFF;
-
-        var material = new THREE.ShaderMaterial( {
-            uniforms: THREE.UniformsUtils.merge( [
-                THREE.ShaderLib[ 'phong' ].uniforms,
-                {
-                    heightmap: { value: null }
-                }
-            ] ),
-            vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
-            fragmentShader: THREE.ShaderChunk[ 'meshphong_frag' ],
-            vertexColors: THREE.VertexColors
-
-        } );
-
-        material.lights = true;
-
-        // Material attributes from MeshPhongMaterial
-        material.color = new THREE.Color( materialColor );
-        material.specular = new THREE.Color( 0x111111 );
-        material.shininess = 0;
-
-        // Sets the uniforms with the material values
-        material.uniforms.diffuse.value = material.color;
-        material.uniforms.specular.value = material.specular;
-        material.uniforms.shininess.value = Math.max( material.shininess, 1e-4 );
-        material.uniforms.opacity.value = material.opacity;
-
-        // Defines
-        material.defines.WIDTH = WIDTH.toFixed( 1 );
-        material.defines.BOUNDS = BOUNDS.toFixed( 1 );
-
-        return material;
+        //valuesChanger();
     }
 
     function initWater() {
 
         var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1 );
 
+        // Initializing the colors
         for ( var i = 0; i <= HALF_SIZE; i++ ) {
             var y = i - HALF_SIZE;
 
@@ -248,7 +221,35 @@ $(document).ready(function () {
         geometry.getAttribute( 'color' ).setDynamic(true);
 
         // Water material
-        var material = initMaterial();
+        var material = new THREE.ShaderMaterial( {
+            uniforms: THREE.UniformsUtils.merge( [
+                THREE.ShaderLib[ 'phong' ].uniforms,
+                {
+                    heightmap: { value: null }
+                }
+            ] ),
+            vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
+            fragmentShader: THREE.ShaderChunk[ 'meshphong_frag' ],
+            vertexColors: THREE.VertexColors
+
+        } );
+
+        material.lights = true;
+
+        // Material attributes from MeshPhongMaterial
+        material.color = new THREE.Color( 0xFFFFFF );
+        material.specular = new THREE.Color( 0x111111 );
+        material.shininess = 0;
+
+        // Sets the uniforms with the material values
+        material.uniforms.diffuse.value = material.color;
+        material.uniforms.specular.value = material.specular;
+        material.uniforms.shininess.value = Math.max( material.shininess, 1e-4 );
+        material.uniforms.opacity.value = material.opacity;
+
+        // Defines
+        material.defines.WIDTH = WIDTH.toFixed( 1 );
+        material.defines.BOUNDS = BOUNDS.toFixed( 1 );
         waterUniforms = material.uniforms;
 
         // Water mesh
@@ -267,7 +268,6 @@ $(document).ready(function () {
         meshRay.matrixAutoUpdate = false;
         meshRay.updateMatrix();
         scene.add( meshRay );
-
 
         // Creates the gpu computation class and sets it up
         gpuCompute = new GPUComputationRenderer( WIDTH, WIDTH, renderer );
@@ -300,22 +300,22 @@ $(document).ready(function () {
 
         var geometry = new THREE.SphereGeometry( 10, 32, 32 );
         var material = new THREE.MeshPhongMaterial();
+        material.visible = false;
 
         sphereMesh = new THREE.Mesh( geometry, material );
 
         scene.add( sphereMesh );
     }
 
-    function initBox() {
+    //function initBox() {
 
-        var geometry = new THREE.BoxGeometry( 20, 10, 10 );
-        var material = new THREE.MeshNormalMaterial();
-        material.visible = false;
+    //    var geometry = new THREE.BoxGeometry( 15, 15, 15);
+    //    var material = new THREE.MeshPhongMaterial();
 
-        boxMesh = new THREE.Mesh( geometry, material );
+    //    boxMesh = new THREE.Mesh( geometry, material );
 
-        scene.add( boxMesh );
-    }
+    //    scene.add( boxMesh );
+    //}
 
     function fillTexture( texture ) {
 
@@ -353,22 +353,115 @@ $(document).ready(function () {
     }
 
     /*
-     * Resets the water with a new explosion.
+     * Assign density to heights
      */
-    function addExplosion() {
+    function densityTexture( texture, time ) {
 
-        var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
-        var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+        var pixels = texture.image.data;
 
-        for ( var i = 0; i < 100; i++ ) {
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
 
-            smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+                var height = window.arrData[time][i][j]['p'] * 5;
 
-            smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-            gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
         }
     }
+
+    /*
+     * Assign temperature to heights
+     */
+    function temperatureTexture( texture, time ) {
+
+        var pixels = texture.image.data;
+
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
+
+                var height = window.arrData[time][i][j]['T'] * 7.5;
+
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
+        }
+    }
+
+    /*
+     * Assign pressure to heights
+     */
+    function pressureTexture( texture, time ) {
+
+        var pixels = texture.image.data;
+
+        var p = 0;
+        for ( var j = 0; j < WIDTH; j++ ) {
+            for ( var i = 0; i < WIDTH; i++ ) {
+
+                var height = window.arrData[time][i][j]['P'] * 10;
+
+                pixels[ p + 0 ] = height;
+                pixels[ p + 1 ] = height;
+                pixels[ p + 2 ] = height;
+                pixels[ p + 3 ] = height;
+
+                p += 4;
+            }
+        }
+    }
+
+    /*
+     * Assign velocity to heights
+     */
+    //function velocityTexture( texture, time ) {
+
+    //    var pixels = texture.image.data;
+
+    //    var p = 0;
+    //    for ( var j = 0; j < WIDTH; j++ ) {
+    //        for ( var i = 0; i < WIDTH; i++ ) {
+
+    //            var height = window.arrData[time][i][j]['vy'] * 7.5;
+
+    //            pixels[ p + 0 ] = height;
+    //            pixels[ p + 1 ] = height;
+    //            pixels[ p + 2 ] = height;
+    //            pixels[ p + 3 ] = height;
+
+    //            p += 4;
+    //        }
+    //    }
+    //}
+
+
+    /*
+     * Resets the water with a new explosion.
+     */
+    //function addExplosion() {
+
+    //    var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
+    //    var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
+
+    //    for ( var i = 0; i < 100; i++ ) {
+
+    //        smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+    //        gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
+
+    //        smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+    //        gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
+    //    }
+    //}
 
     /*
      * Maps DENSITY values to specific COLORS on the mesh.
@@ -383,7 +476,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColour(window.arrData[time][i][j]['p'], 1000, 293);
+                var color = getColour(window.arrData[time][i][j]['p'], 1, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -392,6 +485,7 @@ $(document).ready(function () {
             }
         }
     }
+
     /*
      * Maps PRESSURE values to specific COLORS on the mesh
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
@@ -405,7 +499,7 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i < WIDTH; i++ ) {
            for ( var j = 0; j < WIDTH; j++ ) {
-               var color = getColour(window.arrData[time][i][j]['P'], 1000, 293);
+               var color = getColour(window.arrData[time][i][j]['P'], 1, 0);
 
                waterColor.setX(count, color[0]);
                waterColor.setY(count, color[1]);
@@ -413,8 +507,8 @@ $(document).ready(function () {
                count++;
            }
        }
-
      }
+
     /*
      * Maps TEMPERATURE values to specific COLORS on the mesh.
      * RED = HIGH, BLUE = LOW (can change color schemes).
@@ -428,7 +522,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColour(window.arrData[time][i][j]['T'], 1000, 293);
+                var color = getColour(window.arrData[time][i][j]['T'], 1, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -437,30 +531,33 @@ $(document).ready(function () {
             }
         }
     }
+
     /*
      * Maps VELOCITY values to specific COLORS on the mesh.
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-    function VelocityField( time ) {
+    //function VelocityField( time ) {
+    //
+    //    var waterColor = waterMesh.geometry.getAttribute('color');
+    //    waterColor.needsUpdate = true;
+    //    var count = 0;
 
-        var waterColor = waterMesh.geometry.getAttribute('color');
-        waterColor.needsUpdate = true;
-        var count = 0;
+    //    // Iterate through each PRESSURE value, map to a color, and write color to mesh.
+    //    for ( var i = 0; i < WIDTH; i++ ) {
+    //        for ( var j = 0; j < WIDTH; j++ ) {
+    //            var color = getColour(window.arrData[time][i][j]['vy'], 1, 0);
 
-        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
-        for ( var i = 0; i < WIDTH; i++ ) {
-            for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColour(window.arrData[time][i][j]['vx'], 1000, 293);
-
-                waterColor.setX(count, color[0]);
-                waterColor.setY(count, color[1]);
-                waterColor.setZ(count, color[2]);
-            }
-        }
-    }
+    //            waterColor.setX(count, color[0]);
+    //            waterColor.setY(count, color[1]);
+    //            waterColor.setZ(count, color[2]);
+    //        }
+    //    }
+    //}
 
 
-    // need to add comments for rest of the functions below.
+    /*
+     * Functions for adjusting window SIZE
+     */
     function onWindowResize() {
 
         windowHalfX = window.innerWidth / 2;
@@ -471,6 +568,7 @@ $(document).ready(function () {
 
         renderer.setSize( window.innerWidth, window.innerHeight );
     }
+
 
     function setMouseCoords( x, y ) {
 
@@ -507,53 +605,42 @@ $(document).ready(function () {
         render();
         stats.update();
 
-        if ( timeStep % 5 === 0 ) {
-            var smallTime = timeStep / 5;
-            
+        if ( timeStep % TIME_DIV_FACTOR === 0 ) {
+            var smallTime = timeStep / TIME_DIV_FACTOR;
+
             if (displayField === DENSITY_FIELD) DensityField( smallTime );
             if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
             if (displayField === PRESSURE_FIELD) PressureField( smallTime );
-            if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
+            //if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
         }
         // Pause if default
-        if ( displayField != DEFAULT_FIELD ) timeStep++;
+        if ( displayField != DEFAULT_FIELD ) {
+            if ((timeStep + 1)/TIME_DIV_FACTOR < DATA_SIZE) timeStep++;
+            else timeStep = 0;
+        }
     }
 
     function render() {
 
         // Set uniforms: mouse interaction
         var uniforms = heightmapVariable.material.uniforms;
-        /*
-        if ( mouseMoved ) {
-
-            this.raycaster.setFromCamera( mouseCoords, camera );
-
-            var intersects = this.raycaster.intersectObject( meshRay );
-
-            if ( intersects.length > 0 ) {
-                var point = intersects[ 0 ].point;
-                uniforms.mousePos.value.set( point.x, point.z );
-
-            }
-            else {
-                uniforms.mousePos.value.set( 10000, 10000 );
-            }
-
-            mouseMoved = false;
-        }
-        else {
-            uniforms.mousePos.value.set( 10000, 10000 );
-        }
-        */
 
         // Do the gpu computation
         gpuCompute.compute();
 
-        // Get compute output in custom uniform
-        waterUniforms.heightmap.value = gpuCompute.getCurrentRenderTarget( heightmapVariable ).texture;
+        if (timeStep % TIME_DIV_FACTOR === 0 ) {
 
-        // Render
-        renderer.render( scene, camera );
+            var smallTime = timeStep / TIME_DIV_FACTOR;
+            var heightmap = gpuCompute.createTexture();
+
+            if (displayField === DENSITY_FIELD) densityTexture( heightmap, smallTime );
+            if (displayField === TEMPERATURE_FIELD) temperatureTexture ( heightmap, smallTime );
+            if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
+            //if (displayField === VELOCITY_FIELD) velocityTexture( heightmap, smallTime );
+
+            waterUniforms.heightmap.value = heightmap;
+            renderer.render( scene, camera );
+        }
     }
 
    /*
@@ -600,27 +687,6 @@ $(document).ready(function () {
 
       return returnColor;
 
-      // MIGHT NOT NEED THIS
-      // // Convert to hexadecimal
-      // var redHex = rgbToHex( red );
-      // var greenHex = rgbToHex( green );
-      // var blueHex = rgbToHex( blue );
-      //
-      // // concatenate the colour strings.
-      // var colour = redHex.concat( greenHex, blueHex );
-      //
-      // // colour is in the form 0x000000 (hopefully)...
-      // return colour;
     }
-
-    // Helper function for getColour. Works for 0 < rgb < 255.
-    // MIGHT NOT NEED THIS, COMMENTED OUT FOR NOW.
-    // var rgbToHex = function (rgb) {
-    //   var hex = Number(rgb).toString(16);
-    //   if (hex.length < 2) {
-    //     hex = "0" + hex;
-    //   }
-    //   return hex;
-    // };
 
 });
