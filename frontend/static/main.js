@@ -101,12 +101,8 @@ $(document).ready(function () {
                 waterMesh.material.wireframe = ! waterMesh.material.wireframe;
                 waterMesh.material.needsUpdate = true;
 
-                //boxMesh.material.wireframe = ! boxMesh.material.wireframe;
                 sphereMesh.material.wireframe = ! sphereMesh.material.wireframe;
             }
-            //if ( event.keyCode === 69) {
-            //    addExplosion();
-            //}
 
         } , false );
 
@@ -118,36 +114,21 @@ $(document).ready(function () {
         document.body.appendChild( stats.dom );
 
         var effectController = {
-            //explosionSize: 15.0,
-            //viscosity: 0.03,
             sphereRadius: 10,
             boxSide: 15,
             timeFactor: 0.1
         };
 
-        //var valuesChanger = function() {
-
-            //heightmapVariable.material.uniforms.explosionSize.value = effectController.explosionSize;
-            //heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
-        //};
-
         var geometryChanger = function() {
 
             var newRadius = effectController.sphereRadius;
-            sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 32, 32 );
+            sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 16, 16 );
 
             TIME_DIV_FACTOR = 1 / effectController.timeFactor;
-
-            //var newSide = effectController.boxSide;
-            //boxMesh.geometry = new THREE.BoxGeometry( newSide, newSide, newSide );
         };
-
-        //gui.add( effectController, "explosionSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
-        //gui.add( effectController, "viscosity", 0.0, 0.03, 0.001 ).onChange( valuesChanger );
 
         gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
         gui.add( effectController, "timeFactor", 0.1, 2, 0.1 ).onChange( geometryChanger );
-        //gui.add( effectController, "boxSide", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
@@ -165,37 +146,21 @@ $(document).ready(function () {
                 displayField = 3;
             }
         };
-        //var buttonVel = {
-        //    VelocityField: function() {
-        //        displayField = 4;
-        //    }
-        //};
         var buttonSphere = {
             ToggleSphere: function() {
                 sphereMesh.material.visible = ! sphereMesh.material.visible;
             }
         };
-        //var buttonBox = {
-        //    ToggleBox: function() {
-        //        boxMesh.material.visible = ! boxMesh.material.visible;
-        //    }
-        //};
 
         // Add buttons to the GUI.
         gui.add( buttonDensity, 'DensityField' );
-        //gui.add( buttonVel, 'VelocityField' );
         gui.add( buttonPres, 'PressureField' );
         gui.add( buttonTemp, 'TemperatureField' );
         gui.add( buttonSphere, 'ToggleSphere' );
-        //gui.add( buttonBox, 'ToggleBox' );
 
         initWater();
 
         initSphere();
-
-        //initBox();
-
-        //valuesChanger();
     }
 
     function initWater() {
@@ -207,12 +172,8 @@ $(document).ready(function () {
             var y = i - HALF_SIZE;
 
             for ( var j = 0; j <= HALF_SIZE; j++ ) {
-                var x = j - HALF_SIZE;
 
-                var r = ( x / SIZE ) + 0.5; // Test gradient
-                var g = ( y / SIZE ) + 0.5;
-
-                colors.push( r, g, 0.7 );
+                colors.push( 0, 0, 1.0 );
             }
         }
 
@@ -307,16 +268,6 @@ $(document).ready(function () {
         scene.add( sphereMesh );
     }
 
-    //function initBox() {
-
-    //    var geometry = new THREE.BoxGeometry( 15, 15, 15);
-    //    var material = new THREE.MeshPhongMaterial();
-
-    //    boxMesh = new THREE.Mesh( geometry, material );
-
-    //    scene.add( boxMesh );
-    //}
-
     function fillTexture( texture ) {
 
         var waterMaxHeight = 50;
@@ -386,7 +337,7 @@ $(document).ready(function () {
         for ( var j = 0; j < WIDTH; j++ ) {
             for ( var i = 0; i < WIDTH; i++ ) {
 
-                var height = window.arrData[time][i][j]['T'] * 7.5;
+                var height = window.arrData[time][i][j]['T'] * 5;
 
                 pixels[ p + 0 ] = height;
                 pixels[ p + 1 ] = height;
@@ -420,48 +371,6 @@ $(document).ready(function () {
             }
         }
     }
-
-    /*
-     * Assign velocity to heights
-     */
-    //function velocityTexture( texture, time ) {
-
-    //    var pixels = texture.image.data;
-
-    //    var p = 0;
-    //    for ( var j = 0; j < WIDTH; j++ ) {
-    //        for ( var i = 0; i < WIDTH; i++ ) {
-
-    //            var height = window.arrData[time][i][j]['vy'] * 7.5;
-
-    //            pixels[ p + 0 ] = height;
-    //            pixels[ p + 1 ] = height;
-    //            pixels[ p + 2 ] = height;
-    //            pixels[ p + 3 ] = height;
-
-    //            p += 4;
-    //        }
-    //    }
-    //}
-
-
-    /*
-     * Resets the water with a new explosion.
-     */
-    //function addExplosion() {
-
-    //    var currentRenderTarget = gpuCompute.getCurrentRenderTarget( heightmapVariable );
-    //    var alternateRenderTarget = gpuCompute.getAlternateRenderTarget( heightmapVariable );
-
-    //    for ( var i = 0; i < 100; i++ ) {
-
-    //        smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-    //        gpuCompute.doRenderTarget( smoothShader, alternateRenderTarget );
-
-    //        smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-    //        gpuCompute.doRenderTarget( smoothShader, currentRenderTarget );
-    //    }
-    //}
 
     /*
      * Maps DENSITY values to specific COLORS on the mesh.
@@ -531,29 +440,6 @@ $(document).ready(function () {
             }
         }
     }
-
-    /*
-     * Maps VELOCITY values to specific COLORS on the mesh.
-     * GREEN = HIGH, BLUE = LOW (can change color schemes).
-     */
-    //function VelocityField( time ) {
-    //
-    //    var waterColor = waterMesh.geometry.getAttribute('color');
-    //    waterColor.needsUpdate = true;
-    //    var count = 0;
-
-    //    // Iterate through each PRESSURE value, map to a color, and write color to mesh.
-    //    for ( var i = 0; i < WIDTH; i++ ) {
-    //        for ( var j = 0; j < WIDTH; j++ ) {
-    //            var color = getColour(window.arrData[time][i][j]['vy'], 1, 0);
-
-    //            waterColor.setX(count, color[0]);
-    //            waterColor.setY(count, color[1]);
-    //            waterColor.setZ(count, color[2]);
-    //        }
-    //    }
-    //}
-
 
     /*
      * Functions for adjusting window SIZE
@@ -636,7 +522,6 @@ $(document).ready(function () {
             if (displayField === DENSITY_FIELD) densityTexture( heightmap, smallTime );
             if (displayField === TEMPERATURE_FIELD) temperatureTexture ( heightmap, smallTime );
             if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
-            //if (displayField === VELOCITY_FIELD) velocityTexture( heightmap, smallTime );
 
             waterUniforms.heightmap.value = heightmap;
             renderer.render( scene, camera );
