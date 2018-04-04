@@ -589,12 +589,12 @@ $(document).ready(function () {
       // VALUES SHOULD BE BETWEEN 0 AND 2(?).
       if( temp >= tempAir && temp <= tempHalf ) {
         blue = 1;
-        // degree of "greenness" is increased in proportion to magnitude of density within given bounds.
+        // degree of "greenness" is increased in proportion to magnitude of temperature within given bounds.
         red = 1 * ( ( temp - tempAir ) / ( tempMax / 2 - tempAir ) );
 
       } else if( temp > tempHalf && temp <= tempMax ) {
         red = 1;
-        // degree of "blueness" decreased in proportion to magnitude of density within given bounds.
+        // degree of "blueness" decreased in proportion to magnitude of temperature within given bounds.
         blue = 1 * ( (tempMax - temp) / (tempMax - tempHalf) );
 
       } else if ( temp > tempMax ) {
