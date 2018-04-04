@@ -1,3 +1,5 @@
+
+
 $(document).ready(function () {
     if (!Detector.webgl) {
         // Will not work unless browser supports WebGL
@@ -6,7 +8,15 @@ $(document).ready(function () {
     }
 
     // Initialize data from file
-    var arrData;
+    var arrData = require('static/data.json');
+    console.log(arrData);
+    function setData( json ) {
+        arrData = json;
+    }
+
+    function getData () {
+        $.getJSON('static/data.json', setData);
+    }
     console.log("Hello");
     getData();
     console.log(arrData);
@@ -503,14 +513,6 @@ $(document).ready(function () {
         requestAnimationFrame( animate );
         render();
         stats.update();
-    }
-
-    function setData( json ) {
-        arrData = json;
-    }
-
-    function getData () {
-        $.getJSON('./static/data.json', setData);
     }
 
     function render() {
