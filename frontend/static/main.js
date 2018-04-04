@@ -10,7 +10,6 @@ $(document).ready(function () {
         Detector.addGetWebGLMessage();
         document.getElementById('container').innerHTML = "";
     }
-    var arrData;
 
     // Initialize data from file
     /*
@@ -57,7 +56,6 @@ $(document).ready(function () {
     var sphereMesh;
     var boxMesh;
     var meshRay;
-
 
     var gpuCompute;
     var heightmapVariable;
