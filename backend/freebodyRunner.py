@@ -22,29 +22,39 @@ dx=.3
 xdim=size*dx
 ydim=size*dx
 dt=.000001
-time=.0001
+time=0.0012
 obj=np.zeros((size,size))
-for i in range(7,12):
-    for j in range(8,13):
+for i in range(8,10):
+    for j in range(9,11):
         obj[j,i]=1
 ColumnSum=np.sum(obj,axis=1)          
            
 
 "                        dt,  dx   #blocks  time num explosion"
-freeb=Freebody(obj,xlen,ylen,340)
+freeb=Freebody(obj,xlen,ylen,1)
 explosion = ExplosionSim(dt, dx, size, time, 1)
 
 
 
 
 e=explosion.finalMatrix
+plt.figure()
+
+
 
 for i in range(0,int(time/dt-3)):
     freeb.update(i,e,dt)
-    plt.clf()
-    sns.heatmap(freeb.S)
-    plt.pause(0.00001)
-    
+    "print i"
+    if (i%110==0 or i>1150):
+        print(freeb.xCOM)
+        print(" ")
+        print(freeb.xCOMOld)
+        print("______")
+        plt.clf()
+        sns.heatmap(freeb.S)
+        plt.show()
+        plt.pause(.001)
+
 
 
 

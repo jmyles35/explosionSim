@@ -35,21 +35,24 @@ class Freebody:
 
 
         (self.xlen,self.ylen)=self.S.shape
-        print (self.xlen)
+        "print (self.xlen)"
         weight=0.0
-        ColumnSum=np.sum(self.S,axis=1)
-        print(ColumnSum)
+        ColumnSum=np.sum(self.S,axis=0)
+        "print(ColumnSum)"
         Sum=np.sum(self.S)
         for i in range(0,self.xlen):
-            print(i)
+            "print(i)"
             weight=weight+i*ColumnSum[i]
         self.xCOM=weight/Sum
 
         weight=0.0
-        RowSum=np.sum(self.S,axis=0)
+        RowSum=np.sum(self.S,axis=1)
         for i in range(0,self.xlen):
             weight=weight+i*RowSum[i]
         self.yCOM=weight/Sum
+        
+        self.xCOMOld=self.xCOM
+        self.yCOMOld=self.yCOM
 
         weight=0.0
         RowSum=np.sum(self.S,axis=1)
@@ -106,132 +109,142 @@ class Freebody:
 
                     if neighbours[7]==1:
 
-                        if neighbours(8)==0 and neighbours(1)==0:
+                        if neighbours[8]==0 and neighbours[1]==0:
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                        if neighbours(6)==0 and neighbours(5)==0:
+                        if neighbours[6]==0 and neighbours[5]==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                    if neighbours(8)==1:
+                    if neighbours[8]==1:
 
-                        if neighbours(7)==0:
+                        if neighbours[7]==0:
                             Fy=Fy+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
 
-                        if neighbours(1)==0:
+                        if neighbours[1]==0:
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                    if neighbours(1)==1:
+                    if neighbours[1]==1:
 
-                        if (neighbours(7)==0 and neighbours(8)==0):
+                        if (neighbours[7]==0 and neighbours[8]==0):
                             Fx=Fx+explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                        if (neighbours(2)==0 and neighbours(3)==0):
+                        if (neighbours[2]==0 and neighbours[3]==0):
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                    if neighbours(2)==1:
+                    if neighbours[2]==1:
 
-                        if neighbours(3)==0:
+                        if neighbours[3]==0:
                             Fy=Fy+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
                             T=T-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                        if neighbours(1)==0:
+                        if neighbours[1]==0:
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                    if neighbours(3)==1:
+                    if neighbours[3]==1:
 
-                        if (neighbours(2)==0 and neighbours(1)==0):
+                        if (neighbours[2]==0 and neighbours[1]==0):
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                        if neighbours(4)==0 and neighbours(5)==0:
+                        if neighbours[4]==0 and neighbours[5]==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*self.xdim/self.xlen/2*(i-self.xCOM)
 
-                    if neighbours(4)==1:
+                    if neighbours[4]==1:
 
-                        if neighbours(3)==0:
+                        if neighbours[3]==0:
                             Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
                             T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                        if neighbours(5)==0:
+                        if neighbours[5]==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                    if neighbours(5)==1:
+                    if neighbours[5]==1:
 
-                        if (neighbours(7)==0 and neighbours(6)==0):
+                        if (neighbours[7]==0 and neighbours[6]==0):
                             Fx=Fx+explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2
                             T=T-explosionMatrix[timestep,j,i-1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                        if (neighbours(4)==0 and neighbours(3)==0):
+                        if (neighbours[4]==0 and neighbours[3]==0):
                             Fx=Fx+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2
                             T=T+explosionMatrix[timestep,j,i+1,4]*self.xdim/self.xlen/2*(j-self.yCOM)
 
-                    if neighbours(6)==1:
+                    if neighbours[6]==1:
 
-                        if neighbours(5)==0:
+                        if neighbours[5]==0:
                             Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
                             T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                        if neighbours(7)==0:
+                        if neighbours[7]==0:
                             Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
                             T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
-                self.xaccel=Fx/self.mass
-                self.yaccel=Fy/self.mass
-                self.omegaDot=T/self.inertia
-                (yCOMOld,xCOMOld)=self.getCOM()
-                self.xCOM=(self.xCOM*self.xdim/self.xlen+self.xveloc*dt)/(self.xdim/self.xlen)
-                self.yCOM=(self.yCOM*self.xdim/self.xlen+self.yveloc*dt)/(self.xdim/self.xlen)
-                self.xveloc=self.xveloc+self.xaccel*dt
-                self.yveloc=self.yveloc+self.yaccel*dt
-                self.rotate(self.omega*dt,xCOMOld,yCOMOld)
-                self.omega=self.omega+self.omegaDot*dt
+        self.xaccel=Fx/self.mass
+        self.yaccel=Fy/self.mass
+        self.omegaDot=T/self.inertia
+        "print(self.S)"
+        (self.yCOMOld,self.xCOMOld)=self.getCOM()
+        self.xCOM=(self.xCOM*self.xdim/self.xlen+self.xveloc*dt)/(self.xdim/self.xlen)
+        self.yCOM=(self.yCOM*self.xdim/self.xlen+self.yveloc*dt)/(self.xdim/self.xlen)
+        self.xveloc=self.xveloc+self.xaccel*dt
+        self.yveloc=self.yveloc+self.yaccel*dt
+        self.rotate(self.omega*dt,self.xCOMOld,self.yCOMOld)
+        self.omega=self.omega+self.omegaDot*dt
+        
+
+        if (self.xCOM-self.xCOMOld)>1:
+            print("moveright")
+            i=self.xlen-1
+            while i>0:
+                self.S[:,i]=self.S[:,i-1]
+                i=i-1
                 
-                if (self.xCOM-xCOMOld)<1:
-                    for i in range(0,self.xlen-1):
-                        self.S[:,i]=self.S[:i+1]
-                    self.S[:,self.xlen-1]=np.zeros((self.xlen,1))
-                if (self.xCOM-xCOMOld)>1:
-                    for i in range(1,self.xlen):
-                        self.S[:,i-1]=self.S[:i]
-                    self.S[:,0]=np.zeros((self.xlen,1))
-                    
-                if (self.yCOM-yCOMOld)<1:
-                    for i in range(0,self.xlen-1):
-                        self.S[i,:]=self.S[i+1,:]
-                    self.S[self.xlen-1,:]=np.zeros((1,self.xlen))
-                if (self.yCOM-yCOMOld)>1:
-                    for i in range(1,self.xlen1):
-                        self.S[i-1,:]=self.S[i,:]
-                    self.S[0,:]=np.zeros((1,self.xlen))                
+            self.S[:,self.xlen-1]=np.zeros((self.xlen))
+        if (self.xCOM-self.xCOMOld)<-1:
+            print("moveleft")
+            for i in range(1,self.xlen-1):
+                self.S[:,i]=self.S[:,i+1]
+            self.S[:,0]=np.zeros((self.xlen))
+            
+        if (self.yCOM-self.yCOMOld)>1:
+            for i in range(1,self.xlen-1):
+                self.S[i,:]=self.S[i-1,:]
+            self.S[self.xlen-1,:]=np.zeros((self.xlen))
+        if (self.yCOM-self.yCOMOld)<-1:
+            for i in range(1,self.xlen-1):
+                self.S[i,:]=self.S[i+1,:]
+            self.S[0,:]=np.zeros((self.xlen))                
                     
 
     def checkwalls(self):
         ColumnSum=np.sum(self.S,axis=0)
-        if ((ColumnSum[0] > 0) or ColumnSum[self.xlen-1]>0):
+        "print(ColumnSum)"
+        if ((ColumnSum[1] > 0) or ColumnSum[self.xlen-2]>0):
             self.xveloc=-0.6*self.xveloc
+            print("rlwall")
         RowSum=np.sum(self.S,axis=1)
-        if (RowSum[0] > 0 or RowSum[self.xlen-1]>0):
+        if (RowSum[1] > 0 or RowSum[self.xlen-2]>0):
             self.yveloc=-0.6*self.yveloc
+            print("udwall")
 
         
 
@@ -244,6 +257,7 @@ class Freebody:
 
     def rotate(self,theta,xCOM,yCOM, fill=0):
         theta=theta
+        "print(theta)"
         sh, sw = self.S.shape
         cx, cy = self.rotate_coords([0, sw, sw, 0], [0, 0, sh, sh], theta, xCOM, yCOM)
         dw, dh= sw, sh
