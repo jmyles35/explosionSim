@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import numpy as np
+import json
 
 app = Flask(__name__,
             static_folder = "./dist/static",
@@ -28,4 +29,11 @@ def setup():
 
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    #app.run(debug = True)
+    params = ["vx", "vy", "T", "p", "P"]
+    mat = np.random.rand(1,1,1,5)
+    shape = mat.shape
+    data = {str(t): {str(x): {str(y): dict(zip(params, mat[t][x][y])) for y in range(shape[2])} for x in range(shape[1])} for t in range(shape[0])}
+
+    with open('data.json', 'w') as outfile:
+        json.dump(str(data), outfile)

@@ -5,9 +5,13 @@ $(document).ready(function () {
         document.getElementById('container').innerHTML = "";
     }
 
-    var dataArr = JSON.parse( document.getElementById('dataScript').textContent );
-
+    var arrData;
+    $.getJSON('./static/data.json', function(json) {
+        //alert(data);
+        arrData = json;
+    });
     console.log("Hello");
+    console.log(arrData);
     // Texture width for simulation -- 32 SEEMS OPTIMAL
     var WIDTH = 16;
     var NUM_TEXELS = WIDTH * WIDTH;
@@ -43,8 +47,6 @@ $(document).ready(function () {
 
     var colors = []; // Need for gradient
     var colorsDefault;
-
-    var dataArr = JSON.parse(data);
 
     init();
     animate();
