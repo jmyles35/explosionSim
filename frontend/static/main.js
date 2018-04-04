@@ -414,6 +414,7 @@ $(document).ready(function () {
                meshColor.setX(count, instP);
                meshColor.setY(count, instP);
                meshColor.setZ(count, instP);
+               count++;
            }
        }
 
