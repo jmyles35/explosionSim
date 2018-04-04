@@ -385,7 +385,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColourDensity(window.arrData[time][i][j]['p'], 1, 0.1);
+                var color = getColourDensity(window.arrData[time][i][j]['p'], 2, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -408,7 +408,7 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i < WIDTH; i++ ) {
            for ( var j = 0; j < WIDTH; j++ ) {
-               var color = getColourPressure(window.arrData[time][i][j]['P'], 1, 0.1);
+               var color = getColourPressure(window.arrData[time][i][j]['P'], 2, 0);
 
                waterColor.setX(count, color[0]);
                waterColor.setY(count, color[1]);
@@ -431,7 +431,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColourTemperature(window.arrData[time][i][j]['T'], 1, 0.1);
+                var color = getColourTemperature(window.arrData[time][i][j]['T'], 2, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
