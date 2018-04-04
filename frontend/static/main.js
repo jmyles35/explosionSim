@@ -40,9 +40,11 @@ $(document).ready(function () {
 
     var colors = []; // Need for gradient
     var colorsDefault;
+    var timeStep = 0;
 
     init();
     animate();
+    console.log("Test Data")
     console.log(window.arrData[0][0][0]['T']);
 
 
@@ -106,9 +108,9 @@ $(document).ready(function () {
         document.body.appendChild( stats.dom );
 
         var effectController = {
-            explosionSize: 20.0,
+            explosionSize: 15.0,
             viscosity: 0.03,
-            sphereRadius: 20,
+            sphereRadius: 10,
             boxSide: 20
         };
 
@@ -291,8 +293,8 @@ $(document).ready(function () {
 
     function initSphere() {
 
-        var geometry = new THREE.SphereGeometry( 20, 32, 32 );
-        var material = new THREE.MeshNormalMaterial();
+        var geometry = new THREE.SphereGeometry( 10, 32, 32 );
+        var material = new THREE.MeshPhongMaterial();
 
         sphereMesh = new THREE.Mesh( geometry, material );
 
@@ -301,7 +303,7 @@ $(document).ready(function () {
 
     function initBox() {
 
-        var geometry = new THREE.BoxGeometry( 20, 20, 20 );
+        var geometry = new THREE.BoxGeometry( 20, 10, 10 );
         var material = new THREE.MeshNormalMaterial();
         material.visible = false;
 
@@ -404,7 +406,7 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i <= WIDTH; i++ ) {
            for ( var j = 0; j <= WIDTH; j++ ) {
-               var instP = dataArr['0'][i][j]['P'];
+               var instP = window.arrData['0'][i][j]['P'];
 
                meshColor.setX(count, instP);
                meshColor.setY(count, instP);
@@ -422,15 +424,19 @@ $(document).ready(function () {
 
         var meshColor = waterMesh.geometry.getAttribute('color');
         meshColor.needsUpdate = true;
+        var count = 0;
 
         // Keeps track of vertex index.
         // TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setY(i, 0.5);
-            meshColor.setX(i, magnitude);
-            meshColor.setZ(i, magnitude);
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
+
+                var magnitude = window.arrData['0'][i][j]['T'];
+                meshColor.setX(count, 0.5);
+                meshColor.setY(count, magnitude);
+                meshColor.setZ(count, magnitude);
+                count++;
+            }
         }
     }
     /*
@@ -498,6 +504,27 @@ $(document).ready(function () {
         requestAnimationFrame( animate );
         render();
         stats.update();
+
+        if ( timeStep % 10 === 0 ) {
+
+            var meshColor = waterMesh.geometry.getAttribute('color');
+            meshColor.needsUpdate = true;
+            var count = 0;
+
+            // Keeps track of vertex index.
+            // TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
+            for ( var i = 0; i < WIDTH; i++ ) {
+                for ( var j = 0; j < WIDTH; j++ ) {
+
+                    var magnitude = window.arrData[timeStep/10][i][j]['P'];
+                    meshColor.setX(count, 0.5);
+                    meshColor.setY(count, magnitude);
+                    meshColor.setZ(count, magnitude);
+                    count++;
+                }
+            }
+        }
+        timeStep++;
     }
 
     function render() {
