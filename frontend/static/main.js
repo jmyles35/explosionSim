@@ -507,14 +507,19 @@ $(document).ready(function () {
         render();
         stats.update();
 
-        if ( timeStep % 10 === 0 ) {
+        if ( timeStep % 5 === 0 ) {
 
-            if (displayField === DENSITY_FIELD) DensityField( timeStep / 10 );
-            if (displayField === TEMPERATURE_FIELD) TemperatureField ( timeStep / 10 );
-            if (displayField === PRESSURE_FIELD) PressureField( timeStep / 10 );
-            if (displayField === VELOCITY_FIELD) VelocityField( timeStep / 10 );
+            var smallTime = timeStep / 5;
+            
+            if ( smallTime < window.arrData.length ) {
+                if (displayField === DENSITY_FIELD) DensityField( smallTime );
+                if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
+                if (displayField === PRESSURE_FIELD) PressureField( smallTime );
+                if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
+            }
         }
-        timeStep++;
+        // Pause if default
+        if ( displayField != DEFAULT_FIELD ) timeStep++;
     }
 
     function render() {
