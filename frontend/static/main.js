@@ -10,6 +10,7 @@ $(document).ready(function () {
         Detector.addGetWebGLMessage();
         document.getElementById('container').innerHTML = "";
     }
+    var arrData;
 
     // Initialize data from file
     /*
@@ -29,8 +30,8 @@ $(document).ready(function () {
         console.log(json); // this will show the info it in firebug console
     });
     */
-
-    console.log("Hello");
+    document.getElementById('json').textContent;
+    //console.log(document.getElementById(json).textContent);
     //getData();
 
 
@@ -56,6 +57,7 @@ $(document).ready(function () {
     var sphereMesh;
     var boxMesh;
     var meshRay;
+
 
     var gpuCompute;
     var heightmapVariable;
