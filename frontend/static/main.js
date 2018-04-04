@@ -552,17 +552,17 @@ $(document).ready(function () {
       // Computes values for red and blue
       // VALUES SHOULD BE BETWEEN 0 AND 2(?).
       if( density >= densityAir && density <= densityHalf ) {
-        blue = 2;
+        blue = 1;
         // degree of "greenness" is increased in proportion to magnitude of density within given bounds.
-        green = 2 * ( ( density - densityAir ) / ( densityMax / 2 - densityAir ) );
+        red = 1 * ( ( density - densityAir ) / ( densityMax / 2 - densityAir ) );
 
       } else if( density > densityHalf && density <= densityMax ) {
-        green = 2;
+        red = 1;
         // degree of "blueness" decreased in proportion to magnitude of density within given bounds.
-        blue = 2 * ( (densityMax - density) / (densityMax - densityHalf) );
+        blue = 1 * ( (densityMax - density) / (densityMax - densityHalf) );
 
       } else if ( density > densityMax ) {
-        green = 2;
+        red = 1;
         blue = 0;
       }
 
