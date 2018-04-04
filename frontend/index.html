@@ -45,27 +45,22 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<!-- <script src="http://code.jquery.com/jquery.min.js"></script> -->
 		<script src="static/data.json"></script>
-		<!--<script type="text/javascript" src="static/data.js?v=2" ></script>-->
+		<script type="text/javascript" src="static/data.js?v=2" id="json"></script>
 
 		<script src="static/GPUComputationRenderer.js"></script>
 
-		<script type="text/javascript" id="json">
-			$.ajaxSetup({
-			   async: false
-			 });
-			 var arrData;
-			$(document).ready(function(e) {
-			      //alert(jsonObject.start.count);
+		<!--<script type="text/javascript" id="json">
 
-			      $.getJSON("static/data.json", function(json) {
-			          var jsonStr = JSON.stringify(json);
-			          var result = JSON.parse(jsonStr);
-			          arrData = result;
-			          //console.log(json); // this will show the info it in firebug console
-			      });
-			      console.log(arrData);
-			});
-		</script>
+			var arrData;
+
+	        $.getJSON("static/data.json", function(json) {
+	            var jsonStr = JSON.stringify(json);
+	            var result = JSON.parse(jsonStr);
+	            arrData = result;
+	          //console.log(json); // this will show the info it in firebug console
+	        });
+	        console.log(arrData);
+		</script>-->
 
 
         <!-- This is the 'compute shader' for the water heightmap: -->

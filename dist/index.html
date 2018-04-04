@@ -17,20 +17,7 @@
 				position: absolute;
 				top: 10px;
 				width: 100%;
-			}</style><link href=/static/css/app.86a4513a3e04c0dcb73e6d6aea4580e4.css rel=stylesheet></head><body><div id=info><h2>Lagrangian Model for the Simulation of Explosions</h2><br>Press mouse button to orbit around.<br>'W' key toggles wireframe. 'E' key resets explosion.</div><script src=static/three.js></script><script src=static/Detector.js></script><script src=static/libs/stats.min.js></script><script src=static/libs/dat.gui.min.js></script><script src=static/controls/OrbitControls.js></script><script src=static/SimplexNoise.js></script><script src=https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js></script><script src=static/data.json></script><script src=static/GPUComputationRenderer.js></script><script type=text/javascript>$.ajaxSetup({
-			   async: false
-			 });
-			$(document).ready(function(e) {
-			      //alert(jsonObject.start.count);
-			      var arrData;
-			      $.getJSON("static/data.json", function(json) {
-			          var jsonStr = JSON.stringify(json);
-			          var result = JSON.parse(jsonStr);
-			          arrData = result;
-			          //console.log(json); // this will show the info it in firebug console
-			      });
-			      console.log(arrData);
-			});</script><script id=heightmapFragmentShader type=x-shader/x-fragment>#include <common>
+			}</style><link href=/static/css/app.86a4513a3e04c0dcb73e6d6aea4580e4.css rel=stylesheet></head><body><div id=info><h2>Lagrangian Model for the Simulation of Explosions</h2><br>Press mouse button to orbit around.<br>'W' key toggles wireframe. 'E' key resets explosion.</div><script src=static/three.js></script><script src=static/Detector.js></script><script src=static/libs/stats.min.js></script><script src=static/libs/dat.gui.min.js></script><script src=static/controls/OrbitControls.js></script><script src=static/SimplexNoise.js></script><script src=https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js></script><script src=static/data.json></script><script type=text/javascript src="static/data.js?v=2" id=json></script><script src=static/GPUComputationRenderer.js></script><script id=heightmapFragmentShader type=x-shader/x-fragment>#include <common>
 
             vec2 mousePos;
             uniform float explosionSize;

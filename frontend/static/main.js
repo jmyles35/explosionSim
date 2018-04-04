@@ -1,15 +1,13 @@
-$.ajax({
-  url: '/static/data.json',
-  async: false,
-  dataType: 'json'
-});
-
 $(document).ready(function () {
     if (!Detector.webgl) {
         // Will not work unless browser supports WebGL
         Detector.addGetWebGLMessage();
         document.getElementById('container').innerHTML = "";
     }
+<<<<<<< HEAD
+=======
+    //var arrData;
+>>>>>>> 24a920808b50362753b583539e4371a43e2335dc
 
     // Initialize data from file
     /*
@@ -29,7 +27,7 @@ $(document).ready(function () {
         console.log(json); // this will show the info it in firebug console
     });
     */
-    document.getElementById('json').textContent;
+    //var arrData = document.getElementById('json');
     //console.log(document.getElementById(json).textContent);
     //getData();
 
@@ -72,7 +70,7 @@ $(document).ready(function () {
 
     init();
     animate();
-    console.log(arrData);
+    console.log(window.arrData);
 
 
     /*

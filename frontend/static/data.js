@@ -1,7 +1,11 @@
 $.ajaxSetup({
    async: false
  });
+<<<<<<< HEAD
  var arrData;
+=======
+var arrData;
+>>>>>>> 24a920808b50362753b583539e4371a43e2335dc
 $(document).ready(function(e) {
       //alert(jsonObject.start.count);
 
