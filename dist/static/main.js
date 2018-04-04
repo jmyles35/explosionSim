@@ -4,30 +4,6 @@ $(document).ready(function () {
         Detector.addGetWebGLMessage();
         document.getElementById('container').innerHTML = "";
     }
-    //var arrData;
-
-    // Initialize data from file
-    /*
-    function setData( json ) {
-        var jsonStr = JSON.stringify(json);
-        var result = JSON.parse(jsonStr);
-        arrData = result;
-        //console.log(arrData);
-    }
-    function getData () {
-        $.getJSON('static/data.json', setData);
-    }
-    $.getJSON("static/data.json", function(json) {
-        var jsonStr = JSON.stringify(json);
-        var result = JSON.parse(jsonStr);
-        arrData = result;
-        console.log(json); // this will show the info it in firebug console
-    });
-    */
-    //var arrData = document.getElementById('json');
-    //console.log(document.getElementById(json).textContent);
-    //getData();
-
 
     // Texture width for simulation -- 32 SEEMS OPTIMAL
     var WIDTH = 16;
@@ -51,7 +27,6 @@ $(document).ready(function () {
     var sphereMesh;
     var boxMesh;
     var meshRay;
-
 
     var gpuCompute;
     var heightmapVariable;
