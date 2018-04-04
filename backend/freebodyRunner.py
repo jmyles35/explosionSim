@@ -19,26 +19,27 @@ import seaborn as sns; sns.set()
 
 size=16
 dx=.3
-xlen=size*dx
-ylen=size*dx
+xdim=size*dx
+ydim=size*dx
 dt=.000001
-time=.001
+time=.0001
 obj=np.zeros((size,size))
 for i in range(7,12):
-    for j in range(7,12):
-        obj[i,j]=1
-           
+    for j in range(8,13):
+        obj[j,i]=1
+ColumnSum=np.sum(obj,axis=1)          
            
 
 "                        dt,  dx   #blocks  time num explosion"
-explosion = ExplosionSim(dt, dx, size, time, 1)
 freeb=Freebody(obj,xlen,ylen,340)
+explosion = ExplosionSim(dt, dx, size, time, 1)
+
 
 
 
 e=explosion.finalMatrix
 
-for i in range(0,time/dt-3):
+for i in range(0,int(time/dt-3)):
     freeb.update(i,e,dt)
     plt.clf()
     sns.heatmap(freeb.S)

@@ -34,30 +34,33 @@ class Freebody:
         self.density    = density
 
 
-        self.xlen,self.ylen=self.S.shape
+        (self.xlen,self.ylen)=self.S.shape
+        print (self.xlen)
         weight=0.0
-        ColumnSum=np.sum(S,axis=0)
-        Sum=np.sum(S)
-        for i in range(0,xlen):
-            weight=weight+i*ColumnSum[0,i]
+        ColumnSum=np.sum(self.S,axis=1)
+        print(ColumnSum)
+        Sum=np.sum(self.S)
+        for i in range(0,self.xlen):
+            print(i)
+            weight=weight+i*ColumnSum[i]
         self.xCOM=weight/Sum
 
         weight=0.0
-        RowSum=np.sum(S,axis=1)
-        for i in range(0,xlen):
-            weight=weight+i*RowSum[i,0]
+        RowSum=np.sum(self.S,axis=0)
+        for i in range(0,self.xlen):
+            weight=weight+i*RowSum[i]
         self.yCOM=weight/Sum
 
         weight=0.0
-        RowSum=np.sum(S,axis=1)
-        for i in range(0,xlen):
-            weight=weight+RowSum[i,0]
+        RowSum=np.sum(self.S,axis=1)
+        for i in range(0,self.xlen):
+            weight=weight+RowSum[i]
         self.mass=self.density*weight
 
         weight=0.0
-        for i in range(0,xlen):
-            for j in range(0,ylen):
-                weight=weight+(pow(i-self.xCOM,2)+pow(j-self.yCOM,2))*xdim/xlan*ydim/ylen
+        for i in range(0,self.xlen):
+            for j in range(0,self.ylen):
+                weight=weight+(pow(i-self.xCOM,2)+pow(j-self.yCOM,2))*self.xdim/self.xlen*self.ydim/self.ylen
         self.inertia=self.density*weight
 
     def getCOM(self):
@@ -69,15 +72,15 @@ class Freebody:
         ColumnSum=np.sum(self.S,axis=0)
         Sum=np.sum(self.S)
         weight=0.0
-        for i in range(0,xlen):
-            weight=weight+i*ColumnSum[0,i]
+        for i in range(0,self.xlen):
+            weight=weight+i*ColumnSum[i]
         xCOM=weight/Sum
 
         weight=0.0
         RowSum=np.sum(self.S,axis=1)
-        for i in range(0,xlen):
-            weight=weight+i*RowSum[i,0]
-        weight/Sum
+        for i in range(0,self.xlen):
+            weight=weight+i*RowSum[i]
+        yCOM=weight/Sum
 
         return yCOM,xCOM
 
@@ -95,13 +98,13 @@ class Freebody:
         Fy=0
         T=0
         
-        self.chekwalls()
-        for i in range(0+1,xlen-1):
-            for j in range(0+1,ylen-1):
+        self.checkwalls()
+        for i in range(0+1,self.xlen-1):
+            for j in range(0+1,self.ylen-1):
                 if self.S[j,i]==1:
-                    neighbours=getNeighbours(i,j)
+                    neighbours=self.getNeighbours(i,j)
 
-                    if neighbours(7)==1:
+                    if neighbours[7]==1:
 
                         if neighbours(8)==0 and neighbours(1)==0:
                             Fy=Fy-explosionMatrix[timestep,j+1,i,4]*self.xdim/self.xlen/2
@@ -114,14 +117,14 @@ class Freebody:
                     if neighbours(8)==1:
 
                         if neighbours(7)==0:
-                            Fy=Fy+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            Fy=Fy+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
 
                         if neighbours(1)==0:
-                            Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                     if neighbours(1)==1:
 
@@ -136,15 +139,15 @@ class Freebody:
                     if neighbours(2)==1:
 
                         if neighbours(3)==0:
-                            Fy=Fy+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
+                            Fy=Fy+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
-                            T=T-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            T=T-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                         if neighbours(1)==0:
-                            Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            Fy=Fy-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            T=T+explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j+1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                     if neighbours(3)==1:
 
@@ -159,15 +162,15 @@ class Freebody:
                     if neighbours(4)==1:
 
                         if neighbours(3)==0:
-                            Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
+                            Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
-                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                         if neighbours(5)==0:
-                            Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                     if neighbours(5)==1:
 
@@ -182,52 +185,52 @@ class Freebody:
                     if neighbours(6)==1:
 
                         if neighbours(5)==0:
-                            Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
+                            Fy=Fy-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx-explosionMatrix[timestep,j,i+1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
 
-                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            T=T-explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)+explosionMatrix[timestep,j,i-1,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                         if neighbours(7)==0:
-                            Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2
-                            T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*xdim/xlen*sqrt(2)/2*(j-self.yCOM)
+                            Fy=Fy+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            Fx=Fx+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2
+                            T=T+explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(i-self.Xcom)-explosionMatrix[timestep,j-1,i,4]*sqrt(2)*self.xdim/self.xlen*sqrt(2)/2*(j-self.yCOM)
 
                 self.xaccel=Fx/self.mass
                 self.yaccel=Fy/self.mass
-                self.omegaDot=T/self.Inertia
-                yCOMOld,XCOMOld=self.getCOM()
-                self.xCOM=(self.xCOM*xdim/xlen+self.xveloc*dt)/(xdim/xlen)
-                self.yCOM=(self.yCOM*xdim/xlen+self.yveloc*dt)/(xdim/xlen)
+                self.omegaDot=T/self.inertia
+                (yCOMOld,xCOMOld)=self.getCOM()
+                self.xCOM=(self.xCOM*self.xdim/self.xlen+self.xveloc*dt)/(self.xdim/self.xlen)
+                self.yCOM=(self.yCOM*self.xdim/self.xlen+self.yveloc*dt)/(self.xdim/self.xlen)
                 self.xveloc=self.xveloc+self.xaccel*dt
                 self.yveloc=self.yveloc+self.yaccel*dt
-                rotate(self.omega*dt)
+                self.rotate(self.omega*dt,xCOMOld,yCOMOld)
                 self.omega=self.omega+self.omegaDot*dt
                 
                 if (self.xCOM-xCOMOld)<1:
                     for i in range(0,self.xlen-1):
                         self.S[:,i]=self.S[:i+1]
-                    self,S[:,self.xlen-1]=np.zeros(self.xlen,1, dtype=int)
+                    self.S[:,self.xlen-1]=np.zeros((self.xlen,1))
                 if (self.xCOM-xCOMOld)>1:
                     for i in range(1,self.xlen):
                         self.S[:,i-1]=self.S[:i]
-                    self,S[:,0]=np.zeros(self.xlen,1, dtype=int)
+                    self.S[:,0]=np.zeros((self.xlen,1))
                     
-                if (yCOM-yCOMOld)<1:
+                if (self.yCOM-yCOMOld)<1:
                     for i in range(0,self.xlen-1):
                         self.S[i,:]=self.S[i+1,:]
-                    self,S[self.xlen-1,:]=np.zeros(1,self.xlen, dtype=int)
-                if (yCOM-yCOMOld)>1:
+                    self.S[self.xlen-1,:]=np.zeros((1,self.xlen))
+                if (self.yCOM-yCOMOld)>1:
                     for i in range(1,self.xlen1):
                         self.S[i-1,:]=self.S[i,:]
-                    self,S[0,:]=np.zeros(1,self.xlen, dtype=int)                
+                    self.S[0,:]=np.zeros((1,self.xlen))                
                     
 
     def checkwalls(self):
         ColumnSum=np.sum(self.S,axis=0)
-        if ((ColumnSum[0,0] > 0) or ColumnSum[0,xlen-1]>0):
+        if ((ColumnSum[0] > 0) or ColumnSum[self.xlen-1]>0):
             self.xveloc=-0.6*self.xveloc
         RowSum=np.sum(self.S,axis=1)
-        if (RowSum[0,0] > 0 or RowSum[xlen-1,0]>0):
+        if (RowSum[0] > 0 or RowSum[self.xlen-1]>0):
             self.yveloc=-0.6*self.yveloc
 
         
@@ -242,19 +245,19 @@ class Freebody:
     def rotate(self,theta,xCOM,yCOM, fill=0):
         theta=theta
         sh, sw = self.S.shape
-        cx, cy = rotate_coords([0, sw, sw, 0], [0, 0, sh, sh], theta, xCOM, yCOM)
+        cx, cy = self.rotate_coords([0, sw, sw, 0], [0, 0, sh, sh], theta, xCOM, yCOM)
         dw, dh= sw, sh
         dx, dy = np.meshgrid(np.arange(dw), np.arange(dh))
-        sx, sy = rotate_coords(dx + cx.min(), dy + cy.min(), -theta, ox, oy)
+        sx, sy = self.rotate_coords(dx + cx.min(), dy + cy.min(), -theta, xCOM, yCOM)
         sx, sy = sx.round().astype(int), sy.round().astype(int)
         mask = (0 <= sx) & (sx < sw) & (0 <= sy) & (sy < sh)
         dest = np.empty(shape=(dh, dw), dtype=int)
-        dest[dy[mask], dx[mask]] = src[sy[mask], sx[mask]]
+        dest[dy[mask], dx[mask]] = self.S[sy[mask], sx[mask]]
         dest[dy[~mask], dx[~mask]] = fill
         self.S=dest
 
 
-    def rotate_coords(x, y, theta, ox, oy):
+    def rotate_coords(self,x, y, theta, ox, oy):
         """
         Rotate arrays of coordinates x and y by theta radians about the
         point (ox, oy).
