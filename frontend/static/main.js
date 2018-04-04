@@ -6,7 +6,7 @@ $(document).ready(function () {
     }
 
     // Texture width for simulation -- 32 SEEMS OPTIMAL
-    var WIDTH = 16;
+    var WIDTH = 32;
     var NUM_TEXELS = WIDTH * WIDTH;
 
     // Size in system units
@@ -16,6 +16,13 @@ $(document).ready(function () {
     // Size in terms of number of vertices
     var SIZE = BOUNDS_HALF - 1;
     var HALF_SIZE = SIZE / 2;
+
+    var DEFAULT_FIELD = 0;
+    var DENSITY_FIELD = 1;
+    var TEMPERATURE_FIELD = 2;
+    var PRESSURE_FIELD = 3;
+    var VELOCITY_FIELD = 4;
+    var displayField = 0;
 
     var container, stats;
     var camera, scene, renderer, controls;
@@ -136,22 +143,22 @@ $(document).ready(function () {
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
             DensityField: function() {
-                DensityField( 0 );
+                displayField = 1;
             }
         };
         var buttonTemp = {
             TemperatureField: function() {
-                TemperatureField( 0 );
+                displayField = 2;
             }
         };
         var buttonPres = {
             PressureField: function() {
-                PressureField( 0 );
+                displayField = 3;
             }
         };
         var buttonVel = {
             VelocityField: function() {
-                VelocityField( 0 );
+                displayField = 4;
             }
         };
         var buttonSphere = {
@@ -376,11 +383,11 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var instp = window.arrData[time][i][j]['p'];
+                var color = getColour(window.arrData[time][i][j]['p'], 1000, 293);
 
-                waterColor.setX(count, instp);
-                waterColor.setY(count, instp);
-                waterColor.setZ(count, instp);
+                waterColor.setX(count, color[0]);
+                waterColor.setY(count, color[1]);
+                waterColor.setZ(count, color[2]);
                 count++;
             }
         }
@@ -398,11 +405,11 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i < WIDTH; i++ ) {
            for ( var j = 0; j < WIDTH; j++ ) {
-               var instP = window.arrData[time][i][j]['P'];
+               var color = getColour(window.arrData[time][i][j]['P'], 1000, 293);
 
-               waterColor.setX(count, instP);
-               waterColor.setY(count, instP);
-               waterColor.setZ(count, instP);
+               waterColor.setX(count, color[0]);
+               waterColor.setY(count, color[1]);
+               waterColor.setZ(count, color[2]);
                count++;
            }
        }
@@ -443,12 +450,11 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var instV = window.arrData[time][i][j]['vx'];
+                var color = getColour(window.arrData[time][i][j]['vx'], 1000, 293);
 
-                waterColor.setX(count, instV);
-                waterColor.setY(count, instV);
-                waterColor.setZ(count, instV);
-                count++;
+                waterColor.setX(count, color[0]);
+                waterColor.setY(count, color[1]);
+                waterColor.setZ(count, color[2]);
             }
         }
     }
@@ -503,9 +509,11 @@ $(document).ready(function () {
 
         if ( timeStep % 10 === 0 ) {
 
-            TemperatureField( timeStep/10 );
+            if (displayField === DENSITY_FIELD) DensityField( timeStep / 10 );
+            if (displayField === TEMPERATURE_FIELD) TemperatureField ( timeStep / 10 );
+            if (displayField === PRESSURE_FIELD) PressureField( timeStep / 10 );
+            if (displayField === VELOCITY_FIELD) VelocityField( timeStep / 10 );
         }
-
         timeStep++;
     }
 
