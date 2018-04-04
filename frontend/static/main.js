@@ -1,34 +1,9 @@
-$.ajax({
-  url: '/static/data.json',
-  async: false,
-  dataType: 'json'
-});
-
 $(document).ready(function () {
     if (!Detector.webgl) {
         // Will not work unless browser supports WebGL
         Detector.addGetWebGLMessage();
         document.getElementById('container').innerHTML = "";
     }
-
-    // Initialize data from file
-    /*
-    function setData( json ) {
-        var jsonStr = JSON.stringify(json);
-        var result = JSON.parse(jsonStr);
-        arrData = result;
-        //console.log(arrData);
-    }
-    function getData () {
-        $.getJSON('static/data.json', setData);
-    }
-    $.getJSON("static/data.json", function(json) {
-        var jsonStr = JSON.stringify(json);
-        var result = JSON.parse(jsonStr);
-        arrData = result;
-        console.log(json); // this will show the info it in firebug console
-    });
-    */
 
     console.log("Hello");
     //getData();
