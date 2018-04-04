@@ -508,15 +508,12 @@ $(document).ready(function () {
         stats.update();
 
         if ( timeStep % 5 === 0 ) {
-
             var smallTime = timeStep / 5;
             
-            if ( smallTime < window.arrData.length ) {
-                if (displayField === DENSITY_FIELD) DensityField( smallTime );
-                if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
-                if (displayField === PRESSURE_FIELD) PressureField( smallTime );
-                if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
-            }
+            if (displayField === DENSITY_FIELD) DensityField( smallTime );
+            if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
+            if (displayField === PRESSURE_FIELD) PressureField( smallTime );
+            if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
         }
         // Pause if default
         if ( displayField != DEFAULT_FIELD ) timeStep++;
