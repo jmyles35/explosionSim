@@ -287,8 +287,8 @@ $(document).ready(function () {
         var pixels = texture.image.data;
 
         var p = 0;
-        for ( var j = 0; j < WIDTH; j++ ) {
-            for ( var i = 0; i < WIDTH; i++ ) {
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
 
                 var x = i * 128 / WIDTH;
                 var y = j * 128 / WIDTH;
@@ -311,8 +311,8 @@ $(document).ready(function () {
         var pixels = texture.image.data;
 
         var p = 0;
-        for ( var j = 0; j < WIDTH; j++ ) {
-            for ( var i = 0; i < WIDTH; i++ ) {
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
 
                 var height = window.arrData[time][i][j]['p'] * 5;
 
@@ -334,8 +334,8 @@ $(document).ready(function () {
         var pixels = texture.image.data;
 
         var p = 0;
-        for ( var j = 0; j < WIDTH; j++ ) {
-            for ( var i = 0; i < WIDTH; i++ ) {
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
 
                 var height = window.arrData[time][i][j]['T'] * 5;
 
@@ -357,8 +357,8 @@ $(document).ready(function () {
         var pixels = texture.image.data;
 
         var p = 0;
-        for ( var j = 0; j < WIDTH; j++ ) {
-            for ( var i = 0; i < WIDTH; i++ ) {
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
 
                 var height = window.arrData[time][i][j]['P'] * 10;
 
