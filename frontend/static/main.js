@@ -385,7 +385,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColour(window.arrData[time][i][j]['p'], 1, 0);
+                var color = getColourDensity(window.arrData[time][i][j]['p'], 1, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -408,7 +408,7 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i < WIDTH; i++ ) {
            for ( var j = 0; j < WIDTH; j++ ) {
-               var color = getColour(window.arrData[time][i][j]['P'], 1, 0);
+               var color = getColourPressure(window.arrData[time][i][j]['P'], 1, 0);
 
                waterColor.setX(count, color[0]);
                waterColor.setY(count, color[1]);
@@ -431,7 +431,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColour(window.arrData[time][i][j]['T'], 1, 0);
+                var color = getColourTemperature(window.arrData[time][i][j]['T'], 1, 0);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -537,8 +537,7 @@ $(document).ready(function () {
     *
     * RETURN: array containing RGB in [0], [1], [2]. Values between 0 and 2.
     */
-    function getColour( density, densityMax, densityAir ) {
-      // range is between (airDensity and densityMax)
+    function getColourDensity( density, densityMax, densityAir ) {
       var densityRange = (densityMax - densityAir);
       var densityHalf = ( (densityMax + densityAir) / 2);
 
@@ -547,22 +546,96 @@ $(document).ready(function () {
       // Colour initializations
       var red = 0;
       var green = 0;
-      var blue = 0;
+      var blue = 0.2;
 
       // Computes values for red and blue
       // VALUES SHOULD BE BETWEEN 0 AND 2(?).
       if( density >= densityAir && density <= densityHalf ) {
-        blue = 1;
+        green = 1;
         // degree of "greenness" is increased in proportion to magnitude of density within given bounds.
         red = 1 * ( ( density - densityAir ) / ( densityMax / 2 - densityAir ) );
 
       } else if( density > densityHalf && density <= densityMax ) {
         red = 1;
         // degree of "blueness" decreased in proportion to magnitude of density within given bounds.
-        blue = 1 * ( (densityMax - density) / (densityMax - densityHalf) );
+        green = 1 * ( (densityMax - density) / (densityMax - densityHalf) );
 
       } else if ( density > densityMax ) {
         red = 1;
+        green = 0;
+      }
+
+      returnColor[0] = red;
+      returnColor[1] = green;
+      returnColor[2] = blue;
+
+      return returnColor;
+
+    }
+
+    // Returns corresponding color representation for temperature.
+    function getColourTemperature( temp, tempMax, tempAir ) {
+      var tempRange = (tempMax - tempAir);
+      var tempHalf = ( (tempMax + tempAir) / 2);
+
+      var returnColor = [];
+
+      // Colour initializations
+      var red = 0;
+      var green = 0.2;
+      var blue = 0;
+
+      // Computes values for red and blue
+      // VALUES SHOULD BE BETWEEN 0 AND 2(?).
+      if( temp >= tempAir && temp <= tempHalf ) {
+        blue = 1;
+        // degree of "greenness" is increased in proportion to magnitude of density within given bounds.
+        red = 1 * ( ( temp - tempAir ) / ( tempMax / 2 - tempAir ) );
+
+      } else if( temp > tempHalf && temp <= tempMax ) {
+        red = 1;
+        // degree of "blueness" decreased in proportion to magnitude of density within given bounds.
+        blue = 1 * ( (tempMax - temp) / (tempMax - tempHalf) );
+
+      } else if ( temp > tempMax ) {
+        red = 1;
+        blue = 0;
+      }
+
+      returnColor[0] = red;
+      returnColor[1] = green;
+      returnColor[2] = blue;
+
+      return returnColor;
+
+    }
+
+    // Returns corresponding color representation for pressure.
+    function getColourPressure( pres, presMax, presAir ) {
+      var presRange = (presMax - presAir);
+      var presHalf = ( (presMax + presAir) / 2);
+
+      var returnColor = [];
+
+      // Colour initializations
+      var red = 0.2;
+      var green = 0;
+      var blue = 0;
+
+      // Computes values for red and blue
+      // VALUES SHOULD BE BETWEEN 0 AND 2(?).
+      if( pres >= presAir && pres <= presHalf ) {
+        blue = 1;
+        // degree of "greenness" is increased in proportion to magnitude of pressure within given bounds.
+        green = 1 * ( ( pres - presAir ) / ( presMax / 2 - presAir ) );
+
+      } else if( pres > presHalf && pres <= presMax ) {
+        green = 1;
+        // degree of "blueness" decreased in proportion to magnitude of pressure within given bounds.
+        blue = 1 * ( (presMax - pres) / (presMax - presHalf) );
+
+      } else if ( pres > presMax ) {
+        green = 1;
         blue = 0;
       }
 
