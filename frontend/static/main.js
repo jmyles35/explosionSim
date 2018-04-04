@@ -385,7 +385,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColourDensity(window.arrData[time][i][j]['p'], 1, 0);
+                var color = getColourDensity(window.arrData[time][i][j]['p'], 1.5, 0.1);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -408,7 +408,7 @@ $(document).ready(function () {
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
        for ( var i = 0; i < WIDTH; i++ ) {
            for ( var j = 0; j < WIDTH; j++ ) {
-               var color = getColourPressure(window.arrData[time][i][j]['P'], 1, 0);
+               var color = getColourPressure(window.arrData[time][i][j]['P'], 1.5, 0.1);
 
                waterColor.setX(count, color[0]);
                waterColor.setY(count, color[1]);
@@ -431,7 +431,7 @@ $(document).ready(function () {
         // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
-                var color = getColourTemperature(window.arrData[time][i][j]['T'], 1, 0);
+                var color = getColourTemperature(window.arrData[time][i][j]['T'], 1.5, 0.1);
 
                 waterColor.setX(count, color[0]);
                 waterColor.setY(count, color[1]);
@@ -546,7 +546,7 @@ $(document).ready(function () {
       // Colour initializations
       var red = 0;
       var green = 0;
-      var blue = 0.2;
+      var blue = 0.3;
 
       // Computes values for red and blue
       // VALUES SHOULD BE BETWEEN 0 AND 2(?).
@@ -582,7 +582,7 @@ $(document).ready(function () {
 
       // Colour initializations
       var red = 0;
-      var green = 0.2;
+      var green = 0.3;
       var blue = 0;
 
       // Computes values for red and blue
@@ -618,7 +618,7 @@ $(document).ready(function () {
       var returnColor = [];
 
       // Colour initializations
-      var red = 0.2;
+      var red = 0.3;
       var green = 0;
       var blue = 0;
 
