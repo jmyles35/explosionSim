@@ -39,7 +39,6 @@ $(document).ready(function () {
     var windowHalfY = window.innerHeight / 2;
 
     var colors = []; // Need for gradient
-    var colorsDefault;
     var timeStep = 0;
 
     init();
@@ -137,22 +136,22 @@ $(document).ready(function () {
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
             DensityField: function() {
-                DensityField();
+                DensityField( 0 );
             }
         };
         var buttonTemp = {
             TemperatureField: function() {
-                TemperatureField();
+                TemperatureField( 0 );
             }
         };
         var buttonPres = {
             PressureField: function() {
-                PressureField();
+                PressureField( 0 );
             }
         };
         var buttonVel = {
             VelocityField: function() {
-                VelocityField();
+                VelocityField( 0 );
             }
         };
         var buttonSphere = {
@@ -240,7 +239,6 @@ $(document).ready(function () {
         // Add 'color' to possible attributes of geometry
         geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
         geometry.getAttribute( 'color' ).setDynamic(true);
-        colorsDefault = geometry.getAttribute( 'color' ).clone();
 
         // Water material
         var material = initMaterial();
@@ -348,7 +346,7 @@ $(document).ready(function () {
     }
 
     /*
-     * Causes the Mesh to become stationary (eliminate all noise).
+     * Resets the water with a new explosion.
      */
     function addExplosion() {
 
@@ -366,51 +364,45 @@ $(document).ready(function () {
     }
 
     /*
-     * Reset color gradient state to default
-     */
-    function DefaultField() {
-
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
-        meshColor = colorsDefault;
-    }
-    /*
      * Maps DENSITY values to specific COLORS on the mesh.
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-    function DensityField() {
+    function DensityField( time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
+        var waterColor = waterMesh.geometry.getAttribute('color');
+        waterColor.needsUpdate = true;
+        var count = 0;
 
-        // Update the colors gradient
-        // i = index, TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setX(i, 0.5);
-            meshColor.setY(i, magnitude);
-            meshColor.setZ(i, magnitude);
+        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
+                var instp = window.arrData[time][i][j]['p'];
+
+                waterColor.setX(count, instp);
+                waterColor.setY(count, instp);
+                waterColor.setZ(count, instp);
+                count++;
+            }
         }
     }
     /*
      * Maps PRESSURE values to specific COLORS on the mesh
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-     function PressureField() {
+     function PressureField( time ) {
 
-       var meshColor = waterMesh.geometry.getAttribute('color');
-       meshColor.needsUpdate = true;
+       var waterColor = waterMesh.geometry.getAttribute('color');
+       waterColor.needsUpdate = true;
        var count = 0;
 
        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
-       for ( var i = 0; i <= WIDTH; i++ ) {
-           for ( var j = 0; j <= WIDTH; j++ ) {
-               var instP = window.arrData['0'][i][j]['P'];
+       for ( var i = 0; i < WIDTH; i++ ) {
+           for ( var j = 0; j < WIDTH; j++ ) {
+               var instP = window.arrData[time][i][j]['P'];
 
-               meshColor.setX(count, instP);
-               meshColor.setY(count, instP);
-               meshColor.setZ(count, instP);
+               waterColor.setX(count, instP);
+               waterColor.setY(count, instP);
+               waterColor.setZ(count, instP);
                count++;
            }
        }
@@ -420,21 +412,20 @@ $(document).ready(function () {
      * Maps TEMPERATURE values to specific COLORS on the mesh.
      * RED = HIGH, BLUE = LOW (can change color schemes).
      */
-    function TemperatureField() {
+    function TemperatureField( time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
+        var waterColor = waterMesh.geometry.getAttribute('color');
+        waterColor.needsUpdate = true;
         var count = 0;
 
-        // Keeps track of vertex index.
-        // TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
+        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
+                var color = getColour(window.arrData[time][i][j]['T'], 1000, 293);
 
-                var magnitude = window.arrData['0'][i][j]['T'];
-                meshColor.setX(count, 0.5);
-                meshColor.setY(count, magnitude);
-                meshColor.setZ(count, magnitude);
+                waterColor.setX(count, color[0]);
+                waterColor.setY(count, color[1]);
+                waterColor.setZ(count, color[2]);
                 count++;
             }
         }
@@ -443,17 +434,22 @@ $(document).ready(function () {
      * Maps VELOCITY values to specific COLORS on the mesh.
      * GREEN = HIGH, BLUE = LOW (can change color schemes).
      */
-    function VelocityField() {
+    function VelocityField( time ) {
 
-        var meshColor = waterMesh.geometry.getAttribute('color');
-        meshColor.needsUpdate = true;
+        var waterColor = waterMesh.geometry.getAttribute('color');
+        waterColor.needsUpdate = true;
+        var count = 0;
 
-        for ( var i = 0; i <= WIDTH*WIDTH; i++ ) {
-            var magnitude = i/(WIDTH*WIDTH);
-            // X = RED, Y = GREEN, Z = BLUE
-            meshColor.setZ(i, 0.5);
-            meshColor.setX(i, magnitude);
-            meshColor.setY(i, magnitude);
+        // Iterate through each PRESSURE value, map to a color, and write color to mesh.
+        for ( var i = 0; i < WIDTH; i++ ) {
+            for ( var j = 0; j < WIDTH; j++ ) {
+                var instV = window.arrData[time][i][j]['vx'];
+
+                waterColor.setX(count, instV);
+                waterColor.setY(count, instV);
+                waterColor.setZ(count, instV);
+                count++;
+            }
         }
     }
 
@@ -507,23 +503,9 @@ $(document).ready(function () {
 
         if ( timeStep % 10 === 0 ) {
 
-            var meshColor = waterMesh.geometry.getAttribute('color');
-            meshColor.needsUpdate = true;
-            var count = 0;
-
-            // Keeps track of vertex index.
-            // TOP LEFT = 0, BOTTOM RIGHT = WIDTH^2 (32 x 32 = 1024).
-            for ( var i = 0; i < WIDTH; i++ ) {
-                for ( var j = 0; j < WIDTH; j++ ) {
-
-                    var magnitude = window.arrData[timeStep/10][i][j]['P'];
-                    meshColor.setX(count, 0.5);
-                    meshColor.setY(count, magnitude);
-                    meshColor.setZ(count, magnitude);
-                    count++;
-                }
-            }
+            TemperatureField( timeStep/10 );
         }
+
         timeStep++;
     }
 
