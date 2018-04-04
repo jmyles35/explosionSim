@@ -43,7 +43,7 @@ $(document).ready(function () {
 
     init();
     animate();
-    console.log(window.arrData);
+    console.log(window.arrData[0][0][0]['T']);
 
 
     /*
