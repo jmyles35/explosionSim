@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns; sns.set()
 
-explosion = ExplosionSim(0.0000002, 0.5, 32, 0.0024, 1)
+explosion = ExplosionSim(0.0000002, 0.2, 32, 0.0024, 1)
 
 mat = explosion.finalMatrix
 

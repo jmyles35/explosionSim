@@ -22,8 +22,8 @@ import seaborn as sns; sns.set()
 class ExplosionSim:
     initV = 0 #m/s C4
     initT = 290 #K no idea
-    initPres = 31 * 10**9 #310 kBar?? for C4 (appears to work with 31 bar?)
-    initDens = 700 #kg/m^3
+    initPres = 10 * 10**9 #310 kBar?? for C4 (appears to work with 31 bar?)
+    initDens = 2000 #kg/m^3
     PATM = 101325.0 #pa
     R = 287.05 #air
     DENSITY = PATM/R/initT #kg/m^3
@@ -32,9 +32,10 @@ class ExplosionSim:
     STEELDENS = 8000 #kg/m^3
     
     TEMPMAX = 2000
-    VMAX = initPres / (2.5 * 10**4 * initDens) * 10 #max is 1.2 times calculated max
+    VMAX = initPres / (2.5 * 10**4 * initDens) * 20 #max is 1.2 times calculated max
     PRESMAX = initPres / 100.0 #let it not be greater than 3x init pressure
     DENSMAX = 2.0 * initDens
+    TFINAL = 350
     
     
     k = 1.0 /120 #multiply by T 
@@ -301,7 +302,7 @@ class ExplosionSim:
 #                    self.lattice[i,j].pres = ExplosionSim.PATM + ( self.lattice[i,j].pres - ExplosionSim.PATM )* 0.9
                 ExplosionSim.PRESMAX = ExplosionSim.PATM + (ExplosionSim.PRESMAX - ExplosionSim.PATM) * 0.995
                 ExplosionSim.VMAX = ExplosionSim.VMAX * 0.9993
-                ExplosionSim.TEMPMAX = ExplosionSim.TFINAL+ (ExplosionSim - ExplosionSim.TFINAL) * 0.999
+                ExplosionSim.TEMPMAX = ExplosionSim.TFINAL + (ExplosionSim.TEMPMAX - ExplosionSim.TFINAL) * 0.999
                 ExplosionSim.DENSMAX = 10 + (ExplosionSim.DENSMAX - 10) * 0.995
                     
             ##every twentieth time step write temp density pressure
