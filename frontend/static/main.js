@@ -364,7 +364,7 @@ $(document).ready(function () {
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
 
-                var height = window.arrData[time][i][j]['P'] * 10;
+                var height = window.arrData[time][i][j]['P'] * 20;
 
                 pixels[ p + 0 ] = height;
                 pixels[ p + 1 ] = height;
@@ -545,9 +545,9 @@ $(document).ready(function () {
             if (displayField === TEMPERATURE_FIELD) temperatureTexture ( heightmap, smallTime );
             if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
 
-            if (smallTime < OBJ_DATA_SIZE) {
-                sphereMesh.position.x = window.objData[smallTime]['x'];
-                sphereMesh.position.z = window.objData[smallTime]['y'];
+            if (timeStep < OBJ_DATA_SIZE) {
+                sphereMesh.position.x = window.objData[smallTime]['x']*128/32 - 64;
+                sphereMesh.position.z = window.objData[smallTime]['y']*128/32 - 64;
 
                 sphereMesh.updateMatrix();
             }
