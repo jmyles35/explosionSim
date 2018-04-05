@@ -546,10 +546,8 @@ $(document).ready(function () {
             if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
 
             if (smallTime < OBJ_DATA_SIZE) {
-                //sphereMesh.position.x = window.objData[smallTime]['x'];
-                //sphereMesh.position.y = window.objData[smallTime]['y'];
-                sphereMesh.position.x = smallTime % 128 - 64;
-                sphereMesh.position.z = smallTime % 128 - 64;
+                sphereMesh.position.x = window.objData[smallTime]['x'];
+                sphereMesh.position.z = window.objData[smallTime]['y'];
 
                 sphereMesh.updateMatrix();
             }
