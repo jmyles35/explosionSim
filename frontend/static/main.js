@@ -17,23 +17,26 @@ $(document).ready(function () {
     var SIZE = BOUNDS_HALF - 1;
     var HALF_SIZE = SIZE / 2;
 
+    // Keep track of which field to display
     var DEFAULT_FIELD = 0;
     var DENSITY_FIELD = 1;
     var TEMPERATURE_FIELD = 2;
     var PRESSURE_FIELD = 3;
     var displayField = 0;
 
+    // For camera and mouse controls
     var container, stats;
     var camera, scene, renderer, controls;
     var mouseMoved = false;
     var mouseCoords = new THREE.Vector2();
     var raycaster = new THREE.Raycaster();
 
+    // Objects in our sim
     var waterMesh;
     var sphereMesh;
-    var boxMesh;
     var meshRay;
 
+    // For heighmap computation
     var gpuCompute;
     var heightmapVariable;
     var waterUniforms;
@@ -49,14 +52,16 @@ $(document).ready(function () {
     var timeStep = 0;
     var TIME_DIV_FACTOR = 2;
     var DATA_SIZE = Object.keys(window.arrData).length;
+    var OBJ_DATA_SIZE = Object.keys(window.objData).length;
 
     init();
     animate();
     console.log("Test Data:");
-    console.log(window.objData[0][0][0]['T']);
+    console.log(window.objData[0]['x']);
     console.log("Data Size:");
     console.log(DATA_SIZE);
-
+    console.log("Object Data Size");
+    console.log(OBJ_DATA_SIZE);
 
     /*
      * Initialize camera, scene, and inital renders.
@@ -102,6 +107,7 @@ $(document).ready(function () {
                 waterMesh.material.needsUpdate = true;
 
                 sphereMesh.material.wireframe = ! sphereMesh.material.wireframe;
+                sphereMesh.material.needsUpdate = true;
             }
 
         } , false );
@@ -119,7 +125,7 @@ $(document).ready(function () {
             timeFactor: 0.1
         };
 
-        var geometryChanger = function() {
+        var valueChanger = function() {
 
             var newRadius = effectController.sphereRadius;
             sphereMesh.geometry = new THREE.SphereGeometry( newRadius, 16, 16 );
@@ -127,8 +133,8 @@ $(document).ready(function () {
             TIME_DIV_FACTOR = 1 / effectController.timeFactor;
         };
 
-        gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( geometryChanger );
-        gui.add( effectController, "timeFactor", 0.1, 2, 0.1 ).onChange( geometryChanger );
+        gui.add( effectController, "sphereRadius", 1.0, 100.0, 1.0 ).onChange( valueChanger );
+        gui.add( effectController, "timeFactor", 0.1, 2, 0.1 ).onChange( valueChanger );
 
         // Buttons for toggling the various propagations (temp, pressure, vel, density)
         var buttonDensity = {
@@ -158,8 +164,8 @@ $(document).ready(function () {
         gui.add( buttonTemp, 'TemperatureField' );
         gui.add( buttonSphere, 'ToggleSphere' );
 
+        // Add objects
         initWater();
-
         initSphere();
     }
 
@@ -169,11 +175,8 @@ $(document).ready(function () {
 
         // Initializing the colors
         for ( var i = 0; i <= HALF_SIZE; i++ ) {
-            var y = i - HALF_SIZE;
-
             for ( var j = 0; j <= HALF_SIZE; j++ ) {
-
-                colors.push( 0, 0, 1.0 );
+                colors.push( i/HALF_SIZE, j/HALF_SIZE, 0.5 );
             }
         }
 
@@ -234,11 +237,10 @@ $(document).ready(function () {
         gpuCompute = new GPUComputationRenderer( WIDTH, WIDTH, renderer );
 
         var heightmap0 = gpuCompute.createTexture();
-
         fillTexture( heightmap0 );
 
+        // Represents heightmap in gpu compute object
         heightmapVariable = gpuCompute.addVariable( "heightmap", document.getElementById( 'heightmapFragmentShader' ).textContent, heightmap0 );
-
         gpuCompute.setVariableDependencies( heightmapVariable, [ heightmapVariable ] );
 
         heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2( 10000, 10000 ) };
@@ -246,6 +248,7 @@ $(document).ready(function () {
         heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
         heightmapVariable.material.defines.BOUNDS = BOUNDS.toFixed( 1 );
 
+        // Check for errors
         var error = gpuCompute.init();
 
         if ( error !== null ) {
@@ -261,11 +264,12 @@ $(document).ready(function () {
 
         var geometry = new THREE.SphereGeometry( 10, 32, 32 );
         var material = new THREE.MeshPhongMaterial();
-        material.visible = false;
+        material.visible = true;
 
         sphereMesh = new THREE.Mesh( geometry, material );
 
         scene.add( sphereMesh );
+        sphereMesh.position.z = -1;
     }
 
     function fillTexture( texture ) {
@@ -314,7 +318,7 @@ $(document).ready(function () {
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
 
-                var height = window.arrData[time][i][j]['p'] * 5;
+                var height = window.arrData[time][i][j]['p'] * 10;
 
                 pixels[ p + 0 ] = height;
                 pixels[ p + 1 ] = height;
@@ -337,7 +341,7 @@ $(document).ready(function () {
         for ( var i = 0; i < WIDTH; i++ ) {
             for ( var j = 0; j < WIDTH; j++ ) {
 
-                var height = window.arrData[time][i][j]['T'] * 5;
+                var height = window.arrData[time][i][j]['T'] * 10;
 
                 pixels[ p + 0 ] = height;
                 pixels[ p + 1 ] = height;
@@ -442,7 +446,7 @@ $(document).ready(function () {
     }
 
     /*
-     * Functions for adjusting window SIZE
+     * Adjust window size
      */
     function onWindowResize() {
 
@@ -456,17 +460,26 @@ $(document).ready(function () {
     }
 
 
+    /*
+     * Track mouse coordinates
+     */
     function setMouseCoords( x, y ) {
 
         mouseCoords.set( ( x / renderer.domElement.clientWidth ) * 2 - 1, - ( y / renderer.domElement.clientHeight ) * 2 + 1 );
         mouseMoved = true;
     }
 
+    /*
+     * Call after mouse movement
+     */
     function onDocumentMouseMove( event ) {
 
         setMouseCoords( event.clientX, event.clientY );
     }
 
+    /*
+     * Call after document start
+     */
     function onDocumentTouchStart( event ) {
 
         if ( event.touches.length === 1 ) {
@@ -476,6 +489,9 @@ $(document).ready(function () {
         }
     }
 
+    /*
+     * Call after mouse movement
+     */
     function onDocumentTouchMove( event ) {
 
         if ( event.touches.length === 1 ) {
@@ -485,19 +501,22 @@ $(document).ready(function () {
         }
     }
 
+    /*
+     * THREE.js animate function
+     */
     function animate() {
 
         requestAnimationFrame( animate );
         render();
         stats.update();
 
+        // Draw the colors
         if ( timeStep % TIME_DIV_FACTOR === 0 ) {
             var smallTime = timeStep / TIME_DIV_FACTOR;
 
             if (displayField === DENSITY_FIELD) DensityField( smallTime );
             if (displayField === TEMPERATURE_FIELD) TemperatureField ( smallTime );
             if (displayField === PRESSURE_FIELD) PressureField( smallTime );
-            //if (displayField === VELOCITY_FIELD) VelocityField( smallTime );
         }
         // Pause if default
         if ( displayField != DEFAULT_FIELD ) {
@@ -506,6 +525,9 @@ $(document).ready(function () {
         }
     }
 
+    /*
+     * Helper function for
+     */
     function render() {
 
         // Set uniforms: mouse interaction
@@ -522,6 +544,15 @@ $(document).ready(function () {
             if (displayField === DENSITY_FIELD) densityTexture( heightmap, smallTime );
             if (displayField === TEMPERATURE_FIELD) temperatureTexture ( heightmap, smallTime );
             if (displayField === PRESSURE_FIELD) pressureTexture( heightmap, smallTime );
+
+            if (smallTime < OBJ_DATA_SIZE) {
+                //sphereMesh.position.x = window.objData[smallTime]['x'];
+                //sphereMesh.position.y = window.objData[smallTime]['y'];
+                sphereMesh.position.x = smallTime % 128 - 64;
+                sphereMesh.position.z = smallTime % 128 - 64;
+
+                sphereMesh.updateMatrix();
+            }
 
             waterUniforms.heightmap.value = heightmap;
             renderer.render( scene, camera );

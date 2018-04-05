@@ -13,7 +13,7 @@ $(document).ready(function(e) {
           arrData = result;
           //console.log(json); // this will show the info it in firebug console
       });
-      $.getJSON("static/data/data_small.json", function(json) {
+      $.getJSON("static/data/objectData.json", function(json) {
           var jsonStr = JSON.stringify(json);
           var result = JSON.parse(jsonStr);
           objData = result;
