@@ -5,7 +5,8 @@
 *   Keenan McConkey
 *   Austin Khorram
 *   Justin Myles
-*   Colema Kaps
+
+*   Coleman Kaps
 *   Esther Lin
 
 ### Project Description
@@ -21,8 +22,6 @@ We intend to model explosions and how they propagate using Lagrangian mechanics,
 | Simulate Lagrangian for chosen objects   | Week 6     | Sphere              |
 | Simulate Lagrangian for arbitrary objects | Week 9     |                     |
 | Finalize simulation GUI                  | Week 9     |                     |
-
-
 
 ### Client - Frontend
 The front is a single page application built with Vue.js. All supporting files have been added. Simulation visuals should be developed in the following locations:
@@ -77,3 +76,5 @@ This is the folder of built features from the front end. It is created when the 
 ### References:
 
 *   “An Eulerian–Lagrangian approach for simulating explosions of energetic devices.” Computers & Structures, Pergamon, 26 Mar. 2007, www.sciencedirect.com/science/article/pii/S0045794907000429.
+=======
+
