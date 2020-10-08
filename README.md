@@ -1,5 +1,7 @@
 # explosionSim - Explosions and Such
 
+[Project Writeup](project-writeup.pdf)
+
 ### Project Members
 
 *   Keenan McConkey
